@@ -3,538 +3,2550 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
 <title>Happy Birthday · draw the bow, hit the heart</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Quicksand:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Yellowtail&display=swap" rel="stylesheet">
+
+
 <style>
-  /* ===========================================================
-     EDIT ME — quick config lives at the top of the <script> below
-     (name, messages, colors, timing). Everything else is plumbing.
-     =========================================================== */
 
-  :root{
-    --cream: #fdece0;
-    --cream-2: #fbdcc9;
-    --rose-deep: #c8175a;
-    --rose-mid: #e2447f;
-    --rose-light: #f6a6c1;
-    --gold: #eab35e;
-    --ink: #4a2e2e;
-    --paper: #fff7ef;
-  }
+/* =========================================================
+   ROOT
+========================================================= */
 
-  *{ box-sizing: border-box; }
+:root{
 
-  html,body{
-    margin:0; padding:0; height:100%;
+    --cream:#fdece0;
+    --cream-2:#fbdcc9;
+
+    --rose-deep:#c8175a;
+    --rose-mid:#e2447f;
+    --rose-light:#f6a6c1;
+
+    --gold:#eab35e;
+
+    --ink:#4a2e2e;
+
+    --paper:#fff7ef;
+}
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+*{
+    box-sizing:border-box;
+}
+
+
+html,
+body{
+
+    margin:0;
+    padding:0;
+
+    width:100%;
+    height:100%;
+
     background:#1b0e14;
-    font-family:'Quicksand', sans-serif;
+
+    font-family:'Quicksand',sans-serif;
+
     overflow:hidden;
-    -webkit-tap-highlight-color: transparent;
-  }
 
-  #stage-frame{
-    position:fixed; inset:0;
-    display:flex; align-items:center; justify-content:center;
-  }
+    -webkit-tap-highlight-color:transparent;
+}
 
-  #stage{
+
+/* =========================================================
+   STAGE
+========================================================= */
+
+#stage-frame{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+
+#stage{
+
     position:relative;
-    width:min(100vw, 56.25vh);
-    height:min(177.78vw, 100vh);
-    background: linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
+
+    width:min(100vw,56.25vh);
+
+    height:min(177.78vw,100vh);
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--cream) 0%,
+            var(--cream-2) 100%
+        );
+
     overflow:hidden;
-    box-shadow:0 0 60px rgba(0,0,0,.5);
-  }
 
-  .scene{
-    position:absolute; inset:0;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    opacity:0; pointer-events:none;
-    transition:opacity 1.1s ease;
-  }
-  .scene.active{ opacity:1; pointer-events:auto; }
+    box-shadow:
+        0 0 60px rgba(0,0,0,.5);
+}
 
-  /* -------------------- shared text styles -------------------- */
-  .eyebrow{
-    font-family:'Fredoka', sans-serif;
-    font-style:italic;
-    font-weight:500;
-    letter-spacing:.02em;
-    color:var(--ink);
-    opacity:.55;
-    font-size:clamp(13px,3.4vw,16px);
-    margin:0 0 6px;
-  }
-  .subtitle{
-    font-family:'Fredoka', sans-serif;
-    font-style:italic;
-    font-weight:400;
-    color:var(--ink);
-    opacity:.6;
-    font-size:clamp(12px,3vw,14px);
-    margin-top:10px;
-    text-align:center;
-  }
 
-  /* ==================== SCENE 1 — ARCHERY ==================== */
-  #scene-archery{ background: radial-gradient(ellipse at 50% 34%, #ffd9c2 0%, var(--cream) 55%, var(--cream-2) 100%); }
+/* =========================================================
+   SCENES
+========================================================= */
 
-  #archery-svg{ width:100%; height:100%; touch-action:none; user-select:none; }
+.scene{
 
-  .archer-hint{
-    fill:var(--ink); opacity:.4; font-family:'Fredoka',sans-serif;
-    letter-spacing:.12em; font-size:22px; font-weight:600;
-    text-anchor:middle;
-    animation: pulse-hint 1.8s ease-in-out infinite;
-  }
-  @keyframes pulse-hint{ 0%,100%{opacity:.25;} 50%{opacity:.55;} }
+    position:absolute;
 
-  .heart-glow{ filter:drop-shadow(0 0 40px rgba(216,60,110,.45)); }
+    inset:0;
 
-  #bow-group path.limb{
-    fill:none; stroke:#5b3a2c; stroke-width:14; stroke-linecap:round;
-  }
-  #bow-string{ stroke:#8a7a63; stroke-width:2.5; fill:none; }
-  #arrow-shaft{ stroke:#5b3a2c; stroke-width:6; stroke-linecap:round; }
-  #arrow-head{ fill:var(--gold); }
-  #arrow-fletch{ fill:var(--rose-mid); }
+    display:flex;
 
-  .burst-heart{
-    font-size:22px;
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    opacity:0;
+
     pointer-events:none;
-  }
 
-  /* ==================== SCENE 2 — TITLE ==================== */
-  #scene-title{
-    background: radial-gradient(120% 90% at 50% 30%, var(--rose-mid) 0%, var(--rose-deep) 65%, #8f0f42 100%);
-  }
-  #scene-title .eyebrow, #scene-title .subtitle{ color:var(--paper); opacity:.75; }
-  .title{
-    font-family:'Playfair Display', serif;
-    font-weight:900;
-    color:var(--paper);
-    font-size:clamp(48px,13.5vw,72px);
-    line-height:.98;
-    text-align:center;
-    margin:2px 0;
-    text-shadow:0 6px 30px rgba(0,0,0,.25);
-  }
-  .swash{
-    width:140px; height:18px; margin:14px auto 4px;
-    border-bottom:3px solid var(--gold);
-    border-radius:50%;
-    transform:rotate(-1.5deg) scaleY(.6);
-    opacity:.9;
-  }
+    transform:
+        scale(1.04)
+        translateY(25px);
 
-  /* ==================== SCENE 3 — TREE ==================== */
-  #scene-tree{ justify-content:flex-end; background: radial-gradient(ellipse at 50% 15%, #fff3e6 0%, var(--cream) 45%, var(--cream-2) 100%); }
+    transition:
+        opacity .9s ease,
+        transform 1s cubic-bezier(.22,.8,.25,1);
+}
 
-  #tree-wrap{
-    position:relative;
-    width:100%;
-    flex:1 1 auto;
-    display:flex; align-items:flex-end; justify-content:center;
-  }
-  #trunk{
-    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-    width:14px; height:0%;
-    background:linear-gradient(180deg,#6b4a3a,#4a3226);
-    border-radius:6px 6px 0 0;
-    transition:height 1.6s cubic-bezier(.22,.9,.3,1);
-  }
-  #canopy{
-    position:absolute; left:50%; bottom:34%;
-    width:78%; max-width:340px; aspect-ratio:1.08/1;
-    transform:translate(-50%,10%);
-    pointer-events:none;
-  }
-  .mini-heart{
-    position:absolute; transform:translate(-50%,-50%) scale(0);
-    opacity:0; line-height:1;
-    filter:drop-shadow(0 1px 3px rgba(120,40,60,.25));
-    transition: transform .7s cubic-bezier(.34,1.56,.64,1), opacity .5s ease;
-  }
-  .mini-heart.bloomed{
-    transform:translate(-50%,-50%) scale(1);
+
+.scene.active{
+
     opacity:1;
-    animation: sway 4.5s ease-in-out infinite;
-  }
-  @keyframes sway{
-    0%,100%{ margin-top:0; }
-    50%{ margin-top:-4px; }
-  }
 
-  .tree-text{
-    position:relative; z-index:2;
-    text-align:left;
-    padding:0 9% 9%;
-    width:100%;
-  }
-  .tree-text .eyebrow{ margin-bottom:2px; }
-  .script-title{
-    font-family:'Yellowtail', cursive;
-    color:var(--rose-deep);
-    font-size:clamp(44px,12vw,60px);
-    line-height:.95;
+    pointer-events:auto;
+
+    transform:
+        scale(1)
+        translateY(0);
+}
+
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+.eyebrow{
+
+    font-family:'Fredoka',sans-serif;
+
+    font-style:italic;
+
+    font-weight:500;
+
+    letter-spacing:.02em;
+
+    color:var(--ink);
+
+    opacity:.55;
+
+    font-size:clamp(13px,3.4vw,16px);
+
     margin:0 0 6px;
-  }
-  .tree-text .subtitle{ text-align:left; margin-top:2px; }
+}
 
-  /* skip control */
-  #skip-btn{
-    position:absolute; top:14px; right:14px; z-index:10;
-    background:rgba(0,0,0,.18); color:#fff; border:none; border-radius:20px;
-    font-family:'Fredoka',sans-serif; font-size:11px; padding:6px 12px;
-    opacity:.55; cursor:pointer;
-  }
 
-  @media (prefers-reduced-motion: reduce){
-    .mini-heart.bloomed{ animation:none; }
-    .scene{ transition:opacity .3s linear; }
-  }
+.subtitle{
+
+    font-family:'Fredoka',sans-serif;
+
+    font-style:italic;
+
+    font-weight:400;
+
+    color:var(--ink);
+
+    opacity:.6;
+
+    font-size:clamp(12px,3vw,14px);
+
+    margin-top:10px;
+
+    text-align:center;
+}
+
+
+/* =========================================================
+   SCENE 1 — ARCHERY
+========================================================= */
+
+#scene-archery{
+
+    background:
+        radial-gradient(
+            ellipse at 50% 34%,
+            #ffd9c2 0%,
+            var(--cream) 55%,
+            var(--cream-2) 100%
+        );
+}
+
+
+#archery-svg{
+
+    width:100%;
+    height:100%;
+
+    touch-action:none;
+
+    user-select:none;
+}
+
+
+.archer-hint{
+
+    fill:var(--ink);
+
+    opacity:.4;
+
+    font-family:'Fredoka',sans-serif;
+
+    letter-spacing:.12em;
+
+    font-size:22px;
+
+    font-weight:600;
+
+    text-anchor:middle;
+
+    animation:
+        pulse-hint
+        1.8s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes pulse-hint{
+
+    0%,
+    100%{
+        opacity:.25;
+    }
+
+    50%{
+        opacity:.55;
+    }
+}
+
+
+.heart-glow{
+
+    filter:
+        drop-shadow(
+            0 0 40px
+            rgba(216,60,110,.45)
+        );
+}
+
+
+#bow-group path.limb{
+
+    fill:none;
+
+    stroke:#5b3a2c;
+
+    stroke-width:14;
+
+    stroke-linecap:round;
+}
+
+
+#bow-string{
+
+    stroke:#8a7a63;
+
+    stroke-width:2.5;
+
+    fill:none;
+}
+
+
+#arrow-shaft{
+
+    stroke:#5b3a2c;
+
+    stroke-width:6;
+
+    stroke-linecap:round;
+}
+
+
+#arrow-head{
+
+    fill:var(--gold);
+}
+
+
+#arrow-fletch{
+
+    fill:var(--rose-mid);
+}
+
+
+.burst-heart{
+
+    font-size:22px;
+
+    pointer-events:none;
+}
+
+
+/* =========================================================
+   HEART IMPACT
+========================================================= */
+
+#heart-target.heart-hit{
+
+    animation:
+        heartImpact
+        420ms
+        ease-out;
+}
+
+
+@keyframes heartImpact{
+
+    0%{
+
+        transform:
+            translate(540px,420px)
+            scale(1);
+    }
+
+    30%{
+
+        transform:
+            translate(540px,420px)
+            scale(1.35);
+    }
+
+    55%{
+
+        transform:
+            translate(540px,420px)
+            scale(.85);
+    }
+
+    100%{
+
+        transform:
+            translate(540px,420px)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   HEART FALLS
+========================================================= */
+
+#heart-target.heart-falling{
+
+    animation:
+        heartFall
+        850ms
+        cubic-bezier(.55,.05,.75,.35)
+        forwards;
+}
+
+
+@keyframes heartFall{
+
+    0%{
+
+        transform:
+            translate(540px,420px)
+            rotate(0deg)
+            scale(1);
+
+        opacity:1;
+    }
+
+    15%{
+
+        transform:
+            translate(540px,430px)
+            rotate(-4deg)
+            scale(1.12);
+
+        opacity:1;
+    }
+
+    100%{
+
+        transform:
+            translate(540px,1750px)
+            rotate(25deg)
+            scale(.65);
+
+        opacity:0;
+    }
+}
+
+
+/* =========================================================
+   SCENE 2 — TITLE
+========================================================= */
+
+#scene-title{
+
+    background:
+        radial-gradient(
+            120% 90% at 50% 30%,
+            var(--rose-mid) 0%,
+            var(--rose-deep) 65%,
+            #8f0f42 100%
+        );
+}
+
+
+#scene-title .eyebrow,
+#scene-title .subtitle{
+
+    color:var(--paper);
+
+    opacity:.75;
+}
+
+
+.title{
+
+    font-family:'Playfair Display',serif;
+
+    font-weight:900;
+
+    color:var(--paper);
+
+    font-size:clamp(48px,13.5vw,72px);
+
+    line-height:.98;
+
+    text-align:center;
+
+    margin:2px 0;
+
+    text-shadow:
+        0 6px 30px rgba(0,0,0,.25);
+}
+
+
+.swash{
+
+    width:140px;
+
+    height:18px;
+
+    margin:14px auto 4px;
+
+    border-bottom:
+        3px solid var(--gold);
+
+    border-radius:50%;
+
+    transform:
+        rotate(-1.5deg)
+        scaleY(.6);
+
+    opacity:.9;
+}
+
+
+/* =========================================================
+   TITLE CONTENT ANIMATION
+========================================================= */
+
+#scene-title .eyebrow,
+#scene-title .title,
+#scene-title .swash,
+#scene-title .subtitle{
+
+    opacity:0;
+
+    transform:
+        translateY(25px);
+
+    transition:
+        opacity .7s ease,
+        transform .9s
+        cubic-bezier(.2,.8,.2,1);
+}
+
+
+#scene-title.active .eyebrow{
+
+    opacity:.75;
+
+    transform:
+        translateY(0);
+
+    transition-delay:.25s;
+}
+
+
+#scene-title.active .title{
+
+    opacity:1;
+
+    transform:
+        translateY(0);
+
+    transition-delay:.4s;
+}
+
+
+#scene-title.active .swash{
+
+    opacity:.9;
+
+    transform:
+        rotate(-1.5deg)
+        scaleY(.6)
+        translateY(0);
+
+    transition-delay:.65s;
+}
+
+
+#scene-title.active .subtitle{
+
+    opacity:.75;
+
+    transform:
+        translateY(0);
+
+    transition-delay:.8s;
+}
+
+
+/* =========================================================
+   SCENE 3 — TREE
+========================================================= */
+
+#scene-tree{
+
+    justify-content:flex-end;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 15%,
+            #fff3e6 0%,
+            var(--cream) 45%,
+            var(--cream-2) 100%
+        );
+}
+
+
+#tree-wrap{
+
+    position:relative;
+
+    width:100%;
+
+    flex:1 1 auto;
+
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:center;
+}
+
+
+/* =========================================================
+   TREE TRUNK
+========================================================= */
+
+#trunk{
+
+    position:absolute;
+
+    bottom:0;
+
+    left:50%;
+
+    transform:
+        translateX(-50%)
+        scaleY(0);
+
+    transform-origin:
+        bottom center;
+
+    width:14px;
+
+    height:0;
+
+    background:
+        linear-gradient(
+            180deg,
+            #6b4a3a,
+            #4a3226
+        );
+
+    border-radius:
+        6px 6px 0 0;
+
+    opacity:0;
+
+    transition:
+        transform 1.7s
+        cubic-bezier(.22,.9,.3,1),
+        opacity .3s ease;
+}
+
+
+#trunk.tree-growing{
+
+    height:46%;
+
+    transform:
+        translateX(-50%)
+        scaleY(1);
+
+    opacity:1;
+}
+
+
+/* =========================================================
+   CANOPY
+========================================================= */
+
+#canopy{
+
+    position:absolute;
+
+    left:50%;
+
+    bottom:34%;
+
+    width:78%;
+
+    max-width:340px;
+
+    aspect-ratio:1.08/1;
+
+    transform:
+        translate(-50%,20px)
+        scale(.82);
+
+    pointer-events:none;
+
+    opacity:0;
+
+    transition:
+        opacity .8s ease,
+        transform 1s
+        cubic-bezier(.2,.9,.3,1);
+}
+
+
+#canopy.canopy-visible{
+
+    opacity:1;
+
+    transform:
+        translate(-50%,0)
+        scale(1);
+}
+
+
+/* =========================================================
+   MINI HEARTS
+========================================================= */
+
+.mini-heart{
+
+    position:absolute;
+
+    transform:
+        translate(-50%,-50%)
+        scale(0)
+        rotate(-12deg);
+
+    opacity:0;
+
+    line-height:1;
+
+    filter:
+        drop-shadow(
+            0 1px 3px
+            rgba(120,40,60,.25)
+        );
+
+    transition:
+        transform .65s
+        cubic-bezier(.34,1.56,.64,1),
+        opacity .45s ease;
+}
+
+
+.mini-heart.bloomed{
+
+    transform:
+        translate(-50%,-50%)
+        scale(1)
+        rotate(0deg);
+
+    opacity:1;
+
+    animation:
+        sway
+        4.5s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes sway{
+
+    0%,
+    100%{
+        margin-top:0;
+    }
+
+    50%{
+        margin-top:-4px;
+    }
+}
+
+
+/* =========================================================
+   TREE TEXT
+========================================================= */
+
+.tree-text{
+
+    position:relative;
+
+    z-index:2;
+
+    text-align:left;
+
+    padding:
+        0 9% 9%;
+
+    width:100%;
+
+    opacity:0;
+
+    transform:
+        translateY(25px);
+
+    transition:
+        opacity 1s ease,
+        transform 1s
+        cubic-bezier(.2,.8,.2,1);
+}
+
+
+.tree-text.show{
+
+    opacity:1;
+
+    transform:
+        translateY(0);
+}
+
+
+.tree-text .eyebrow{
+
+    margin-bottom:2px;
+}
+
+
+.script-title{
+
+    font-family:'Yellowtail',cursive;
+
+    color:var(--rose-deep);
+
+    font-size:clamp(44px,12vw,60px);
+
+    line-height:.95;
+
+    margin:0 0 6px;
+}
+
+
+.tree-text .subtitle{
+
+    text-align:left;
+
+    margin-top:2px;
+}
+
+
+.tree-text .eyebrow,
+.tree-text .script-title,
+.tree-text .subtitle{
+
+    opacity:0;
+
+    transform:
+        translateY(15px);
+
+    transition:
+        opacity .7s ease,
+        transform .8s ease;
+}
+
+
+.tree-text.show .eyebrow{
+
+    opacity:1;
+
+    transform:
+        translateY(0);
+
+    transition-delay:.1s;
+}
+
+
+.tree-text.show .script-title{
+
+    opacity:1;
+
+    transform:
+        translateY(0);
+
+    transition-delay:.25s;
+}
+
+
+.tree-text.show .subtitle{
+
+    opacity:1;
+
+    transform:
+        translateY(0);
+
+    transition-delay:.45s;
+}
+
+
+/* =========================================================
+   RESTART BUTTON
+========================================================= */
+
+#skip-btn{
+
+    position:absolute;
+
+    top:14px;
+
+    right:14px;
+
+    z-index:10;
+
+    background:
+        rgba(0,0,0,.18);
+
+    color:#fff;
+
+    border:none;
+
+    border-radius:20px;
+
+    font-family:'Fredoka',sans-serif;
+
+    font-size:11px;
+
+    padding:6px 12px;
+
+    opacity:.55;
+
+    cursor:pointer;
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion:reduce){
+
+    .mini-heart.bloomed{
+
+        animation:none;
+    }
+
+    .scene{
+
+        transition:
+            opacity .3s linear;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+    #stage{
+
+        width:100vw;
+
+        height:100vh;
+    }
+
+    .archer-hint{
+
+        font-size:20px;
+    }
+}
+
 </style>
 </head>
+
+
 <body>
 
+
 <div id="stage-frame">
-  <div id="stage">
 
-    <button id="skip-btn" title="restart">restart</button>
+<div id="stage">
 
-    <!-- ================= SCENE 1: ARCHERY ================= -->
-    <section id="scene-archery" class="scene active">
-      <svg id="archery-svg" viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid slice">
 
-        <text x="540" y="230" text-anchor="middle" font-family="Fredoka" font-style="italic"
-              font-size="34" fill="#4a2e2e" opacity=".55" id="archer-caption">a little something, for you</text>
+<button
+    id="skip-btn"
+    title="restart"
+>
+    restart
+</button>
 
-        <g id="heart-target" class="heart-glow" transform="translate(540,420)">
-          <text text-anchor="middle" dominant-baseline="central" font-size="150">💓</text>
-        </g>
 
-        <g id="burst-layer"></g>
+<!-- =====================================================
+     SCENE 1 — ARCHERY
+===================================================== -->
 
-        <g id="bow-group" transform="translate(230,1330)">
-          <path class="limb" id="limb-top" d="M0,-140 Q60,-70 0,0"/>
-          <path class="limb" id="limb-bottom" d="M0,0 Q60,70 0,140"/>
-          <polyline id="bow-string" points="0,-140 0,0 0,140"/>
-          <g id="arrow-group">
-            <line id="arrow-shaft" x1="0" y1="0" x2="150" y2="0"/>
-            <polygon id="arrow-head" points="150,0 130,-9 130,9"/>
-            <polygon id="arrow-fletch" points="0,0 -18,-10 -10,0 -18,10"/>
-          </g>
-        </g>
+<section
+    id="scene-archery"
+    class="scene active"
+>
 
-        <text class="archer-hint" x="540" y="1660" id="pull-hint">PULL &amp; RELEASE</text>
-      </svg>
-    </section>
 
-    <!-- ================= SCENE 2: TITLE ================= -->
-    <section id="scene-title" class="scene">
-      <p class="eyebrow" id="title-eyebrow">make a wish...</p>
-      <h1 class="title" id="title-main">Happy<br>Birthday</h1>
-      <div class="swash"></div>
-      <p class="subtitle" id="title-sub">to someone worth celebrating</p>
-    </section>
+<svg
+    id="archery-svg"
+    viewBox="0 0 1080 1920"
+    preserveAspectRatio="xMidYMid slice"
+>
 
-    <!-- ================= SCENE 3: TREE ================= -->
-    <section id="scene-tree" class="scene">
-      <div id="tree-wrap">
-        <div id="trunk"></div>
-        <div id="canopy"></div>
-      </div>
-      <div class="tree-text">
-        <p class="eyebrow" id="tree-eyebrow">and... make it count</p>
-        <h2 class="script-title" id="tree-script">Happy<br>Birthday</h2>
-        <p class="subtitle" id="tree-sub" style="margin-left:0;text-align:left;">here's to a year that blooms</p>
-      </div>
-    </section>
 
-  </div>
+<text
+    x="540"
+    y="230"
+    text-anchor="middle"
+    font-family="Fredoka"
+    font-style="italic"
+    font-size="34"
+    fill="#4a2e2e"
+    opacity=".55"
+    id="archer-caption"
+>
+    a little something, for you
+</text>
+
+
+<!-- HEART TARGET -->
+
+<g
+    id="heart-target"
+    class="heart-glow"
+    transform="translate(540,420)"
+>
+
+    <text
+        text-anchor="middle"
+        dominant-baseline="central"
+        font-size="150"
+    >
+        💓
+    </text>
+
+</g>
+
+
+<!-- IMPACT BURST -->
+
+<g id="burst-layer"></g>
+
+
+<!-- =====================================================
+     BOW
+===================================================== -->
+
+<g
+    id="bow-group"
+    transform="translate(230,1330)"
+>
+
+
+<path
+    class="limb"
+    id="limb-top"
+    d="M0,-140 Q60,-70 0,0"
+/>
+
+
+<path
+    class="limb"
+    id="limb-bottom"
+    d="M0,0 Q60,70 0,140"
+/>
+
+
+<polyline
+    id="bow-string"
+    points="0,-140 0,0 0,140"
+/>
+
+
+<g id="arrow-group">
+
+<line
+    id="arrow-shaft"
+    x1="0"
+    y1="0"
+    x2="150"
+    y2="0"
+/>
+
+
+<polygon
+    id="arrow-head"
+    points="150,0 130,-9 130,9"
+/>
+
+
+<polygon
+    id="arrow-fletch"
+    points="0,0 -18,-10 -10,0 -18,10"
+/>
+
+</g>
+
+</g>
+
+
+<text
+    class="archer-hint"
+    x="540"
+    y="1660"
+    id="pull-hint"
+>
+    PULL &amp; RELEASE
+</text>
+
+
+</svg>
+
+</section>
+
+
+<!-- =====================================================
+     SCENE 2 — TITLE
+===================================================== -->
+
+<section
+    id="scene-title"
+    class="scene"
+>
+
+
+<p
+    class="eyebrow"
+    id="title-eyebrow"
+>
+    make a wish...
+</p>
+
+
+<h1
+    class="title"
+    id="title-main"
+>
+    Happy<br>
+    Birthday
+</h1>
+
+
+<div class="swash"></div>
+
+
+<p
+    class="subtitle"
+    id="title-sub"
+>
+    to someone worth celebrating
+</p>
+
+
+</section>
+
+
+<!-- =====================================================
+     SCENE 3 — TREE
+===================================================== -->
+
+<section
+    id="scene-tree"
+    class="scene"
+>
+
+
+<div id="tree-wrap">
+
+
+<div id="trunk"></div>
+
+
+<div id="canopy"></div>
+
+
 </div>
 
+
+<div class="tree-text">
+
+
+<p
+    class="eyebrow"
+    id="tree-eyebrow"
+>
+    and... make it count
+</p>
+
+
+<h2
+    class="script-title"
+    id="tree-script"
+>
+    Happy<br>
+    Birthday
+</h2>
+
+
+<p
+    class="subtitle"
+    id="tree-sub"
+>
+    here's to a year that blooms
+</p>
+
+
+</div>
+
+
+</section>
+
+
+</div>
+
+</div>
+
+
 <script>
+
 (function(){
-  "use strict";
 
-  /* =====================================================
-     CONFIG — change the words / colors / counts here
-     ===================================================== */
-  const CONFIG = {
-    recipientName: null,           // e.g. "Mahima" — if set, swaps into titles below
-    archerCaption: "a little something, for you",
-    titleEyebrow: "make a wish...",
-    titleSub: "to someone worth celebrating",
-    treeEyebrow: "and... make it count",
-    treeSub: "here's to a year that blooms",
-    heartCount: 340,               // how many mini hearts bloom in the canopy
-    heartPalette: ["#e2447f","#f6a6c1","#eab35e","#c8175a","#f28aa8","#e8c07d"],
-    autoAdvanceTitleMs: 2600,      // how long the title scene holds before the tree
-  };
+"use strict";
 
-  if (CONFIG.recipientName){
-    document.getElementById('title-sub').textContent = "to " + CONFIG.recipientName + ", worth celebrating";
-  }
-  document.getElementById('archer-caption').textContent = CONFIG.archerCaption;
-  document.getElementById('title-eyebrow').textContent = CONFIG.titleEyebrow;
-  document.getElementById('title-sub').textContent = CONFIG.titleSub;
-  document.getElementById('tree-eyebrow').textContent = CONFIG.treeEyebrow;
-  document.getElementById('tree-sub').textContent = CONFIG.treeSub;
 
-  /* =====================================================
-     Scene switching
-     ===================================================== */
-  const scenes = {
-    archery: document.getElementById('scene-archery'),
-    title:   document.getElementById('scene-title'),
-    tree:    document.getElementById('scene-tree'),
-  };
-  function showScene(name){
-    Object.values(scenes).forEach(s => s.classList.remove('active'));
-    scenes[name].classList.add('active');
-  }
+/* =========================================================
+   CONFIGURATION
+========================================================= */
 
-  /* =====================================================
-     SCENE 1 — bow + arrow interaction
-     ===================================================== */
-  const svg = document.getElementById('archery-svg');
-  const bowGroup = document.getElementById('bow-group');
-  const arrowGroup = document.getElementById('arrow-group');
-  const bowString = document.getElementById('bow-string');
-  const limbTop = document.getElementById('limb-top');
-  const limbBottom = document.getElementById('limb-bottom');
-  const heartTarget = document.getElementById('heart-target');
-  const burstLayer = document.getElementById('burst-layer');
-  const pullHint = document.getElementById('pull-hint');
+const CONFIG = {
 
-  // bow sits at (230,1330); heart sits at (540,420) — aim direction:
-  const bowAnchor = {x:230, y:1330};
-  const targetPoint = {x:540, y:420};
-  const dx = targetPoint.x - bowAnchor.x, dy = targetPoint.y - bowAnchor.y;
-  const dist = Math.hypot(dx,dy);
-  const dir = {x:dx/dist, y:dy/dist};              // unit vector bow -> heart
-  const angleDeg = Math.atan2(dir.y, dir.x) * 180/Math.PI;
+    recipientName:null,
 
-  bowGroup.setAttribute('transform', `translate(${bowAnchor.x},${bowAnchor.y}) rotate(${angleDeg})`);
+    archerCaption:
+        "a little something, for you",
 
-  const REST_OFFSET = 150;   // arrow tip distance from bow at rest, along aim dir
-  const MAX_PULL = 130;      // how far back the string can be drawn
-  const FIRE_THRESHOLD = 40; // minimum pull to actually loose the arrow
+    titleEyebrow:
+        "make a wish...",
 
-  let pulling = false;
-  let pullAmount = 0;
-  let pointerStart = null;
+    titleSub:
+        "to someone worth celebrating",
 
-  function setArrow(pull){
-    // arrow slides back along local +x axis (bow-local coords, since group is rotated)
-    const nockX = REST_OFFSET - pull;
-    arrowGroup.setAttribute('transform', `translate(${nockX},0)`);
-    // string bends to meet the nock point
-    bowString.setAttribute('points', `0,-140 ${nockX - REST_OFFSET},0 0,140`);
-    // limbs flex slightly with pull
-    const flex = 60 + pull*0.25;
-    limbTop.setAttribute('d', `M0,-140 Q${flex},-70 0,0`);
-    limbBottom.setAttribute('d', `M0,0 Q${flex},70 0,140`);
-  }
-  setArrow(0);
+    treeEyebrow:
+        "and... make it count",
 
-  function toSvgPoint(evt){
-    const pt = svg.createSVGPoint();
-    const t = evt.touches ? evt.touches[0] : evt;
-    pt.x = t.clientX; pt.y = t.clientY;
-    const ctm = svg.getScreenCTM().inverse();
-    return pt.matrixTransform(ctm);
-  }
+    treeSub:
+        "here's to a year that blooms",
 
-  function startPull(evt){
-    pulling = true;
-    pointerStart = toSvgPoint(evt);
-    pullHint.style.opacity = 0;
-    evt.preventDefault();
-  }
-  function movePull(evt){
-    if (!pulling) return;
-    const p = toSvgPoint(evt);
-    // project (p - bowAnchor) onto -dir to get how far "back" they've pulled
-    const vx = p.x - bowAnchor.x, vy = p.y - bowAnchor.y;
-    const along = vx*dir.x + vy*dir.y;         // distance along aim direction (negative = pulled back)
-    let pull = REST_OFFSET - along;
-    pull = Math.max(0, Math.min(MAX_PULL, pull));
-    pullAmount = pull;
-    setArrow(pull);
-    evt.preventDefault();
-  }
-  function endPull(evt){
-    if (!pulling) return;
-    pulling = false;
-    if (pullAmount >= FIRE_THRESHOLD){
-      fireArrow(pullAmount);
-    } else {
-      springBack();
-    }
-  }
+    heartCount:
+        340,
 
-  function springBack(){
-    const start = pullAmount, t0 = performance.now(), dur=260;
-    function step(t){
-      const k = Math.min(1,(t-t0)/dur);
-      const val = start*(1-k);
-      setArrow(val);
-      pullAmount = val;
-      if (k<1) requestAnimationFrame(step);
-      else { pullHint.style.opacity = .4; }
-    }
-    requestAnimationFrame(step);
-  }
+    heartPalette:[
+        "#e2447f",
+        "#f6a6c1",
+        "#eab35e",
+        "#c8175a",
+        "#f28aa8",
+        "#e8c07d"
+    ],
 
-  svg.addEventListener('pointerdown', startPull);
-  window.addEventListener('pointermove', movePull);
-  window.addEventListener('pointerup', endPull);
+    autoAdvanceTitleMs:
+        2600
+};
 
-  function fireArrow(power){
-    // detach a flying arrow copy and animate it from the nock to the heart
-    const nockX = REST_OFFSET - power;
-    const startLocal = {x:nockX, y:0};
-    // convert bow-local point to svg-root coords (rotate + translate)
-    const rad = angleDeg*Math.PI/180;
-    const startWorld = {
-      x: bowAnchor.x + startLocal.x*Math.cos(rad) - startLocal.y*Math.sin(rad),
-      y: bowAnchor.y + startLocal.x*Math.sin(rad) + startLocal.y*Math.cos(rad)
-    };
 
-    const flying = document.createElementNS('http://www.w3.org/2000/svg','g');
-    flying.setAttribute('transform', `translate(${startWorld.x},${startWorld.y}) rotate(${angleDeg})`);
-    flying.innerHTML = `
-      <line x1="0" y1="0" x2="150" y2="0" stroke="#5b3a2c" stroke-width="6" stroke-linecap="round"/>
-      <polygon points="150,0 130,-9 130,9" fill="#eab35e"/>
-      <polygon points="0,0 -18,-10 -10,0 -18,10" fill="#e2447f"/>
-    `;
-    svg.appendChild(flying);
+/* =========================================================
+   TEXT
+========================================================= */
 
-    // reset the bow's static arrow instantly (it "left the string")
-    setArrow(0); pullAmount = 0;
+if(CONFIG.recipientName){
 
-    const t0 = performance.now(), dur = 340;
-    const travelDist = Math.hypot(targetPoint.x-startWorld.x, targetPoint.y-startWorld.y) - 60;
-    function step(t){
-      const k = Math.min(1, (t-t0)/dur);
-      const ease = 1 - Math.pow(1-k, 3);
-      const d = travelDist*ease;
-      flying.setAttribute('transform', `translate(${startWorld.x + dir.x*d},${startWorld.y + dir.y*d}) rotate(${angleDeg})`);
-      if (k<1) requestAnimationFrame(step);
-      else { flying.remove(); hitHeart(); }
-    }
-    requestAnimationFrame(step);
-  }
+    document.getElementById(
+        'title-sub'
+    ).textContent =
+        "to " +
+        CONFIG.recipientName +
+        ", worth celebrating";
 
-  function hitHeart(){
-    // pulse the heart
-    heartTarget.animate(
-      [{transform:heartTarget.getAttribute('transform')+' scale(1)'},
-       {transform:heartTarget.getAttribute('transform')+' scale(1.35)'},
-       {transform:heartTarget.getAttribute('transform')+' scale(1)'}],
-      {duration:420, easing:'ease-out'}
+}
+
+
+document.getElementById(
+    'archer-caption'
+).textContent =
+    CONFIG.archerCaption;
+
+
+document.getElementById(
+    'title-eyebrow'
+).textContent =
+    CONFIG.titleEyebrow;
+
+
+document.getElementById(
+    'title-sub'
+).textContent =
+    CONFIG.titleSub;
+
+
+document.getElementById(
+    'tree-eyebrow'
+).textContent =
+    CONFIG.treeEyebrow;
+
+
+document.getElementById(
+    'tree-sub'
+).textContent =
+    CONFIG.treeSub;
+
+
+/* =========================================================
+   SCENES
+========================================================= */
+
+const scenes = {
+
+    archery:
+        document.getElementById(
+            'scene-archery'
+        ),
+
+    title:
+        document.getElementById(
+            'scene-title'
+        ),
+
+    tree:
+        document.getElementById(
+            'scene-tree'
+        )
+};
+
+
+function showScene(name){
+
+    Object.values(
+        scenes
+    ).forEach(scene => {
+
+        scene.classList.remove(
+            'active'
+        );
+
+    });
+
+
+    requestAnimationFrame(() => {
+
+        scenes[name].classList.add(
+            'active'
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   ARCHERY ELEMENTS
+========================================================= */
+
+const svg =
+    document.getElementById(
+        'archery-svg'
     );
 
-    // burst of small hearts drifting up & out
-    const glyphs = ['💗','💛','💕','🩷','💚','🌟','💞','✨','💓','💖','🩵','💙'];
-    for (let i=0;i<16;i++){
-      const el = document.createElementNS('http://www.w3.org/2000/svg','text');
-      const ang = (Math.random()*Math.PI*2);
-      const r0 = 10;
-      const x0 = targetPoint.x + Math.cos(ang)*r0;
-      const y0 = targetPoint.y + Math.sin(ang)*r0;
-      el.setAttribute('x', x0); el.setAttribute('y', y0);
-      el.setAttribute('font-size', 20+Math.random()*22);
-      el.setAttribute('text-anchor','middle');
-      el.setAttribute('opacity','0');
-      el.textContent = glyphs[i % glyphs.length];
-      burstLayer.appendChild(el);
 
-      const dxp = (Math.random()-0.5)*260;
-      const dyp = -(120 + Math.random()*260);
-      const dur = 1100 + Math.random()*700;
-      const delay = Math.random()*150;
-      const anim = el.animate(
-        [
-          {transform:'translate(0px,0px)', opacity:0, offset:0},
-          {transform:'translate(0px,0px)', opacity:1, offset:0.08},
-          {transform:`translate(${dxp}px,${dyp}px)`, opacity:0, offset:1}
-        ],
-        {duration:dur, delay:delay, easing:'cubic-bezier(.2,.6,.3,1)', fill:'forwards'}
-      );
+const bowGroup =
+    document.getElementById(
+        'bow-group'
+    );
+
+
+const arrowGroup =
+    document.getElementById(
+        'arrow-group'
+    );
+
+
+const bowString =
+    document.getElementById(
+        'bow-string'
+    );
+
+
+const limbTop =
+    document.getElementById(
+        'limb-top'
+    );
+
+
+const limbBottom =
+    document.getElementById(
+        'limb-bottom'
+    );
+
+
+const heartTarget =
+    document.getElementById(
+        'heart-target'
+    );
+
+
+const burstLayer =
+    document.getElementById(
+        'burst-layer'
+    );
+
+
+const pullHint =
+    document.getElementById(
+        'pull-hint'
+    );
+
+
+/* =========================================================
+   BOW POSITION
+========================================================= */
+
+const bowAnchor = {
+
+    x:230,
+
+    y:1330
+};
+
+
+const targetPoint = {
+
+    x:540,
+
+    y:420
+};
+
+
+const dx =
+    targetPoint.x -
+    bowAnchor.x;
+
+
+const dy =
+    targetPoint.y -
+    bowAnchor.y;
+
+
+const dist =
+    Math.hypot(
+        dx,
+        dy
+    );
+
+
+const dir = {
+
+    x:dx / dist,
+
+    y:dy / dist
+};
+
+
+const angleDeg =
+    Math.atan2(
+        dir.y,
+        dir.x
+    ) *
+    180 /
+    Math.PI;
+
+
+bowGroup.setAttribute(
+
+    'transform',
+
+    `translate(
+        ${bowAnchor.x},
+        ${bowAnchor.y}
+    )
+    rotate(${angleDeg})`
+
+);
+
+
+/* =========================================================
+   BOW SETTINGS
+========================================================= */
+
+const REST_OFFSET =
+    150;
+
+
+const MAX_PULL =
+    130;
+
+
+const FIRE_THRESHOLD =
+    40;
+
+
+let pulling =
+    false;
+
+
+let pullAmount =
+    0;
+
+
+let pointerStart =
+    null;
+
+
+let arrowHasBeenFired =
+    false;
+
+
+/* =========================================================
+   SET ARROW
+========================================================= */
+
+function setArrow(pull){
+
+    const nockX =
+        REST_OFFSET -
+        pull;
+
+
+    arrowGroup.setAttribute(
+
+        'transform',
+
+        `translate(
+            ${nockX},
+            0
+        )`
+
+    );
+
+
+    bowString.setAttribute(
+
+        'points',
+
+        `0,-140
+         ${nockX - REST_OFFSET},0
+         0,140`
+
+    );
+
+
+    const flex =
+        60 +
+        pull * .25;
+
+
+    limbTop.setAttribute(
+
+        'd',
+
+        `M0,-140
+         Q${flex},-70
+         0,0`
+
+    );
+
+
+    limbBottom.setAttribute(
+
+        'd',
+
+        `M0,0
+         Q${flex},70
+         0,140`
+
+    );
+
+}
+
+
+setArrow(0);
+
+
+/* =========================================================
+   SCREEN → SVG
+========================================================= */
+
+function toSvgPoint(evt){
+
+    const pt =
+        svg.createSVGPoint();
+
+
+    const source =
+        evt.touches
+        ? evt.touches[0]
+        : evt;
+
+
+    pt.x =
+        source.clientX;
+
+
+    pt.y =
+        source.clientY;
+
+
+    const ctm =
+        svg.getScreenCTM()
+        .inverse();
+
+
+    return pt.matrixTransform(
+        ctm
+    );
+}
+
+
+/* =========================================================
+   START PULL
+========================================================= */
+
+function startPull(evt){
+
+    if(arrowHasBeenFired){
+
+        return;
     }
+
+
+    pulling =
+        true;
+
+
+    pointerStart =
+        toSvgPoint(evt);
+
+
+    pullHint.style.opacity =
+        0;
+
+
+    evt.preventDefault();
+}
+
+
+/* =========================================================
+   MOVE PULL
+========================================================= */
+
+function movePull(evt){
+
+    if(!pulling){
+
+        return;
+    }
+
+
+    const p =
+        toSvgPoint(evt);
+
+
+    const vx =
+        p.x -
+        bowAnchor.x;
+
+
+    const vy =
+        p.y -
+        bowAnchor.y;
+
+
+    const along =
+        vx * dir.x +
+        vy * dir.y;
+
+
+    let pull =
+        REST_OFFSET -
+        along;
+
+
+    pull =
+        Math.max(
+            0,
+            Math.min(
+                MAX_PULL,
+                pull
+            )
+        );
+
+
+    pullAmount =
+        pull;
+
+
+    setArrow(
+        pull
+    );
+
+
+    evt.preventDefault();
+}
+
+
+/* =========================================================
+   RELEASE
+========================================================= */
+
+function endPull(){
+
+    if(!pulling){
+
+        return;
+    }
+
+
+    pulling =
+        false;
+
+
+    if(
+        pullAmount >=
+        FIRE_THRESHOLD
+    ){
+
+        fireArrow(
+            pullAmount
+        );
+
+    }
+
+    else{
+
+        springBack();
+
+    }
+
+}
+
+
+/* =========================================================
+   SPRING BACK
+========================================================= */
+
+function springBack(){
+
+    const start =
+        pullAmount;
+
+
+    const t0 =
+        performance.now();
+
+
+    const duration =
+        260;
+
+
+    function step(t){
+
+        const k =
+            Math.min(
+                1,
+                (t - t0) /
+                duration
+            );
+
+
+        const value =
+            start *
+            (1 - k);
+
+
+        setArrow(
+            value
+        );
+
+
+        pullAmount =
+            value;
+
+
+        if(k < 1){
+
+            requestAnimationFrame(
+                step
+            );
+
+        }
+
+        else{
+
+            pullHint.style.opacity =
+                .4;
+
+        }
+
+    }
+
+
+    requestAnimationFrame(
+        step
+    );
+
+}
+
+
+/* =========================================================
+   POINTER EVENTS
+========================================================= */
+
+svg.addEventListener(
+    'pointerdown',
+    startPull
+);
+
+
+window.addEventListener(
+    'pointermove',
+    movePull
+);
+
+
+window.addEventListener(
+    'pointerup',
+    endPull
+);
+
+
+/* =========================================================
+   FIRE ARROW
+========================================================= */
+
+function fireArrow(power){
+
+    if(arrowHasBeenFired){
+
+        return;
+    }
+
+
+    arrowHasBeenFired =
+        true;
+
+
+    const nockX =
+        REST_OFFSET -
+        power;
+
+
+    const rad =
+        angleDeg *
+        Math.PI /
+        180;
+
+
+    const startWorld = {
+
+        x:
+            bowAnchor.x +
+            nockX *
+            Math.cos(rad),
+
+        y:
+            bowAnchor.y +
+            nockX *
+            Math.sin(rad)
+    };
+
+
+    const flying =
+        document.createElementNS(
+
+            'http://www.w3.org/2000/svg',
+
+            'g'
+
+        );
+
+
+    flying.setAttribute(
+
+        'transform',
+
+        `translate(
+            ${startWorld.x},
+            ${startWorld.y}
+        )
+        rotate(${angleDeg})`
+
+    );
+
+
+    flying.innerHTML = `
+
+        <line
+            x1="0"
+            y1="0"
+            x2="150"
+            y2="0"
+            stroke="#5b3a2c"
+            stroke-width="6"
+            stroke-linecap="round"
+        />
+
+        <polygon
+            points="150,0 130,-9 130,9"
+            fill="#eab35e"
+        />
+
+        <polygon
+            points="0,0 -18,-10 -10,0 -18,10"
+            fill="#e2447f"
+        />
+
+    `;
+
+
+    svg.appendChild(
+        flying
+    );
+
+
+    setArrow(0);
+
+    pullAmount =
+        0;
+
+
+    const startTime =
+        performance.now();
+
+
+    const duration =
+        520;
+
+
+    const travelDist =
+        Math.hypot(
+
+            targetPoint.x -
+            startWorld.x,
+
+            targetPoint.y -
+            startWorld.y
+
+        ) - 55;
+
+
+    function step(t){
+
+        const k =
+            Math.min(
+                1,
+                (t - startTime) /
+                duration
+            );
+
+
+        const ease =
+            1 -
+            Math.pow(
+                1 - k,
+                3
+            );
+
+
+        const d =
+            travelDist *
+            ease;
+
+
+        flying.setAttribute(
+
+            'transform',
+
+            `translate(
+                ${startWorld.x + dir.x * d},
+                ${startWorld.y + dir.y * d}
+            )
+            rotate(${angleDeg})`
+
+        );
+
+
+        if(k < 1){
+
+            requestAnimationFrame(
+                step
+            );
+
+        }
+
+        else{
+
+            flying.remove();
+
+            hitHeart();
+
+        }
+
+    }
+
+
+    requestAnimationFrame(
+        step
+    );
+}
+
+
+/* =========================================================
+   HEART HIT
+========================================================= */
+
+function hitHeart(){
+
+    /* -----------------------------------------
+       IMPACT
+    ----------------------------------------- */
+
+    heartTarget.classList.add(
+        'heart-hit'
+    );
+
+
+    createImpactBurst();
+
+
+    /* -----------------------------------------
+       HEART FALLS
+    ----------------------------------------- */
 
     setTimeout(() => {
-      showScene('title');
-      setTimeout(() => showScene('tree'), CONFIG.autoAdvanceTitleMs);
-      setTimeout(() => growTree(), CONFIG.autoAdvanceTitleMs + 250);
-    }, 650);
-  }
 
-  /* =====================================================
-     SCENE 3 — trunk grows, heart-shaped canopy blooms
-     ===================================================== */
-  const trunkEl = document.getElementById('trunk');
-  const canopyEl = document.getElementById('canopy');
-  let treeGrown = false;
+        heartTarget.classList.remove(
+            'heart-hit'
+        );
 
-  function inHeart(x,y){
-    // classic implicit heart curve: (x^2+y^2-1)^3 - x^2 y^3 <= 0
-    const a = x*x + y*y - 1;
-    return (a*a*a - x*x*y*y*y) <= 0;
-  }
 
-  function sampleHeartPoints(n){
-    const pts = [];
-    let attempts = 0;
-    while (pts.length < n && attempts < 40000){
-      attempts++;
-      const x = (Math.random()*2-1)*1.35;
-      const y = (Math.random()*2-1)*1.3;
-      if (inHeart(x,y)) pts.push({x,y});
+        heartTarget.classList.add(
+            'heart-falling'
+        );
+
+    },300);
+
+
+    /* -----------------------------------------
+       TITLE SLIDE
+    ----------------------------------------- */
+
+    setTimeout(() => {
+
+        showScene(
+            'title'
+        );
+
+    },1050);
+
+
+    /* -----------------------------------------
+       TREE SLIDE
+    ----------------------------------------- */
+
+    setTimeout(() => {
+
+        showScene(
+            'tree'
+        );
+
+    },1050 + CONFIG.autoAdvanceTitleMs);
+
+
+    /* -----------------------------------------
+       TREE START
+    ----------------------------------------- */
+
+    setTimeout(() => {
+
+        growTree();
+
+    },1050 + CONFIG.autoAdvanceTitleMs + 250);
+
+}
+
+
+/* =========================================================
+   IMPACT BURST
+========================================================= */
+
+function createImpactBurst(){
+
+    const glyphs = [
+
+        '💗',
+        '💛',
+        '💕',
+        '🩷',
+        '✨',
+        '💞',
+        '💓',
+        '💖'
+
+    ];
+
+
+    for(
+        let i=0;
+        i<22;
+        i++
+    ){
+
+        const el =
+            document.createElementNS(
+
+                'http://www.w3.org/2000/svg',
+
+                'text'
+            );
+
+
+        const angle =
+            Math.random() *
+            Math.PI *
+            2;
+
+
+        const distance =
+            20 +
+            Math.random() *
+            80;
+
+
+        const x =
+            targetPoint.x +
+            Math.cos(angle) *
+            10;
+
+
+        const y =
+            targetPoint.y +
+            Math.sin(angle) *
+            10;
+
+
+        el.setAttribute(
+            'x',
+            x
+        );
+
+
+        el.setAttribute(
+            'y',
+            y
+        );
+
+
+        el.setAttribute(
+            'text-anchor',
+            'middle'
+        );
+
+
+        el.setAttribute(
+            'font-size',
+            18 +
+            Math.random() *
+            24
+        );
+
+
+        el.setAttribute(
+            'opacity',
+            '0'
+        );
+
+
+        el.textContent =
+            glyphs[
+                i %
+                glyphs.length
+            ];
+
+
+        burstLayer.appendChild(
+            el
+        );
+
+
+        el.animate(
+
+            [
+
+                {
+
+                    transform:
+                        'translate(0,0) scale(.4)',
+
+                    opacity:0
+
+                },
+
+                {
+
+                    transform:
+                        'translate(0,0) scale(1)',
+
+                    opacity:1
+
+                },
+
+                {
+
+                    transform:
+                        `
+                        translate(
+                            ${Math.cos(angle) * distance}px,
+                            ${Math.sin(angle) * distance}px
+                        )
+                        scale(.4)
+                        `,
+
+                    opacity:0
+
+                }
+
+            ],
+
+            {
+
+                duration:
+                    700 +
+                    Math.random() *
+                    500,
+
+                easing:
+                    'cubic-bezier(.2,.7,.2,1)',
+
+                fill:
+                    'forwards'
+
+            }
+
+        );
+
+
+        setTimeout(() => {
+
+            el.remove();
+
+        },1400);
+
     }
+
+}
+
+
+/* =========================================================
+   TREE
+========================================================= */
+
+const trunkEl =
+    document.getElementById(
+        'trunk'
+    );
+
+
+const canopyEl =
+    document.getElementById(
+        'canopy'
+    );
+
+
+const treeText =
+    document.querySelector(
+        '.tree-text'
+    );
+
+
+let treeGrown =
+    false;
+
+
+/* =========================================================
+   HEART SHAPE MATH
+========================================================= */
+
+function inHeart(x,y){
+
+    const a =
+        x*x +
+        y*y -
+        1;
+
+
+    return (
+
+        a*a*a -
+        x*x*y*y*y
+
+    ) <= 0;
+}
+
+
+/* =========================================================
+   GENERATE HEART POINTS
+========================================================= */
+
+function sampleHeartPoints(n){
+
+    const pts =
+        [];
+
+
+    let attempts =
+        0;
+
+
+    while(
+
+        pts.length < n &&
+        attempts < 40000
+
+    ){
+
+        attempts++;
+
+
+        const x =
+            (
+                Math.random() *
+                2 -
+                1
+            ) * 1.35;
+
+
+        const y =
+            (
+                Math.random() *
+                2 -
+                1
+            ) * 1.3;
+
+
+        if(
+            inHeart(x,y)
+        ){
+
+            pts.push({
+                x:x,
+                y:y
+            });
+
+        }
+
+    }
+
+
     return pts;
-  }
+}
 
-  function growTree(){
-    if (treeGrown) return;
-    treeGrown = true;
-    trunkEl.style.height = '46%';
 
-    const pts = sampleHeartPoints(CONFIG.heartCount);
-    const w = canopyEl.clientWidth, h = canopyEl.clientHeight;
+/* =========================================================
+   GROW TREE
+========================================================= */
 
-    pts.forEach((p, i) => {
-      const span = document.createElement('span');
-      span.className = 'mini-heart';
-      const glyphs = ['💗','💛','💕','🩷','💚','🌟','💞','✨','💓','💖','🩵','💙','🌹'];
-      span.textContent = glyphs[Math.floor(Math.random()*glyphs.length)];
-      const size = 12 + Math.random()*14;
-      span.style.fontSize = size+'px';
-      span.style.color = CONFIG.heartPalette[i % CONFIG.heartPalette.length];
+function growTree(){
 
-      // map math coords (y-up, point at bottom) to canopy pixel box
-      const screenX = (w/2) + (p.x/1.35) * (w/2);
-      const screenY = h - ( (p.y/1.3 + 1)/2 ) * h;
-      span.style.left = screenX+'px';
-      span.style.top = screenY+'px';
+    if(treeGrown){
 
-      canopyEl.appendChild(span);
+        return;
+    }
 
-      const delay = 400 + Math.random()*1600 + i*2;
-      setTimeout(() => span.classList.add('bloomed'), delay);
-    });
-  }
 
-  /* restart control */
-  document.getElementById('skip-btn').addEventListener('click', () => {
-    location.reload();
-  });
+    treeGrown =
+        true;
+
+
+    /* -----------------------------------------
+       STEP 1 — CANOPY AREA APPEARS
+    ----------------------------------------- */
+
+    canopyEl.classList.add(
+        'canopy-visible'
+    );
+
+
+    /* -----------------------------------------
+       STEP 2 — STEM GROWS
+    ----------------------------------------- */
+
+    setTimeout(() => {
+
+        trunkEl.classList.add(
+            'tree-growing'
+        );
+
+    },250);
+
+
+    /* -----------------------------------------
+       STEP 3 — BLOOMS AFTER STEM
+    ----------------------------------------- */
+
+    setTimeout(() => {
+
+        createTreeHearts();
+
+    },2050);
+
+
+    /* -----------------------------------------
+       STEP 4 — TEXT
+    ----------------------------------------- */
+
+    setTimeout(() => {
+
+        treeText.classList.add(
+            'show'
+        );
+
+    },3700);
+
+}
+
+
+/* =========================================================
+   CREATE TREE HEARTS
+========================================================= */
+
+function createTreeHearts(){
+
+    const pts =
+        sampleHeartPoints(
+            CONFIG.heartCount
+        );
+
+
+    const w =
+        canopyEl.clientWidth;
+
+
+    const h =
+        canopyEl.clientHeight;
+
+
+    canopyEl.classList.add(
+        'canopy-visible'
+    );
+
+
+    const glyphs = [
+
+        '💗',
+        '💛',
+        '💕',
+        '🩷',
+        '💚',
+        '🌟',
+        '💞',
+        '✨',
+        '💓',
+        '💖',
+        '🩵',
+        '💙',
+        '🌹'
+
+    ];
+
+
+    pts.forEach(
+        (p,i) => {
+
+
+            const span =
+                document.createElement(
+                    'span'
+                );
+
+
+            span.className =
+                'mini-heart';
+
+
+            span.textContent =
+                glyphs[
+                    Math.floor(
+                        Math.random() *
+                        glyphs.length
+                    )
+                ];
+
+
+            const size =
+                11 +
+                Math.random() *
+                14;
+
+
+            span.style.fontSize =
+                size +
+                'px';
+
+
+            span.style.color =
+                CONFIG.heartPalette[
+                    Math.floor(
+                        Math.random() *
+                        CONFIG.heartPalette.length
+                    )
+                ];
+
+
+            const screenX =
+                (w/2) +
+                (p.x/1.35) *
+                (w/2);
+
+
+            const screenY =
+                h -
+                (
+                    (
+                        p.y/1.3 +
+                        1
+                    ) / 2
+                ) *
+                h;
+
+
+            span.style.left =
+                screenX +
+                'px';
+
+
+            span.style.top =
+                screenY +
+                'px';
+
+
+            canopyEl.appendChild(
+                span
+            );
+
+
+            const delay =
+                100 +
+                Math.random() *
+                1900 +
+                i * 3;
+
+
+            setTimeout(() => {
+
+                span.classList.add(
+                    'bloomed'
+                );
+
+            },delay);
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RESTART
+========================================================= */
+
+document
+    .getElementById(
+        'skip-btn'
+    )
+    .addEventListener(
+        'click',
+        () => {
+
+            location.reload();
+
+        }
+    );
+
+
+/* =========================================================
+   INITIAL STATE
+========================================================= */
+
+showScene(
+    'archery'
+);
+
 
 })();
+
 </script>
+
 </body>
 </html>
