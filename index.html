@@ -2,25 +2,39 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               user-scalable=no">
 
-<title>Happy Birthday 💗</title>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
+<title>Happy Birthday 🎂</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,700&family=Yellowtail&display=swap"
-      rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Quicksand:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Yellowtail&display=swap" rel="stylesheet">
 
 <style>
 
 /* =========================================================
-   BASIC SETUP
+   GLOBAL
 ========================================================= */
+
+:root{
+    --cream:#fff5ec;
+    --cream2:#fde3d3;
+
+    --brown:#4b2728;
+    --brown2:#673332;
+
+    --pink:#e52f76;
+    --pink2:#f36f9d;
+    --pink3:#f9aec7;
+
+    --gold:#efb84e;
+    --paper:#fffaf5;
+}
 
 *{
     box-sizing:border-box;
@@ -29,16 +43,19 @@
 
 html,
 body{
+    margin:0;
     width:100%;
     height:100%;
-    margin:0;
-    padding:0;
     overflow:hidden;
-    background:#160b11;
+    background:#170b11;
 }
 
 body{
-    font-family:'Fredoka',sans-serif;
+    font-family:'Quicksand',sans-serif;
+}
+
+button{
+    font-family:inherit;
 }
 
 /* =========================================================
@@ -53,10 +70,11 @@ body{
     justify-content:center;
     align-items:center;
 
-    overflow:hidden;
+    background:#170b11;
 }
 
 #stage{
+
     position:relative;
 
     width:min(100vw,56.25vh);
@@ -67,21 +85,21 @@ body{
     background:
         radial-gradient(
             ellipse at 50% 25%,
-            #fffdf8 0%,
-            #fff5e9 38%,
-            #fde9dc 72%,
-            #fbdccf 100%
+            #fffdf9 0%,
+            var(--cream) 45%,
+            var(--cream2) 100%
         );
 
     box-shadow:
-        0 0 70px rgba(0,0,0,.45);
+        0 0 70px rgba(0,0,0,.5);
 }
 
 /* =========================================================
-   SCENE SYSTEM
+   SCENES
 ========================================================= */
 
 .scene{
+
     position:absolute;
     inset:0;
 
@@ -91,53 +109,49 @@ body{
     transition:
         opacity 1s ease,
         transform 1s ease;
-
-    transform:scale(1.02);
 }
 
 .scene.active{
+
     opacity:1;
     pointer-events:auto;
-    transform:scale(1);
 }
 
 /* =========================================================
    RESTART
 ========================================================= */
 
-#restart{
+#restartBtn{
+
     position:absolute;
 
-    top:26px;
-    right:18px;
+    top:18px;
+    right:16px;
 
-    z-index:100;
+    z-index:999;
 
-    border:none;
+    border:0;
 
-    padding:13px 22px;
+    padding:11px 18px;
 
     border-radius:30px;
 
-    background:rgba(120,75,80,.12);
+    color:white;
+
+    background:rgba(80,45,50,.15);
 
     backdrop-filter:blur(8px);
 
-    color:white;
-
-    font-family:'Fredoka',sans-serif;
-    font-size:15px;
+    font-size:13px;
 
     cursor:pointer;
 
-    transition:.3s ease;
+    opacity:.65;
+
+    transition:.3s;
 }
 
-#restart:hover{
-    background:rgba(120,75,80,.22);
-}
-
-#restart:active{
+#restartBtn:active{
     transform:scale(.94);
 }
 
@@ -146,16 +160,18 @@ body{
 ========================================================= */
 
 #scene-archery{
+
     background:
         radial-gradient(
             ellipse at 50% 30%,
-            #fff6eb 0%,
-            #fde9dc 65%,
-            #f9d7cb 100%
+            #ffe3d0 0%,
+            #fdece0 55%,
+            #fbdac7 100%
         );
 }
 
-#archery-svg{
+#archerySvg{
+
     width:100%;
     height:100%;
 
@@ -163,75 +179,167 @@ body{
     user-select:none;
 }
 
+.archery-caption{
+
+    fill:var(--brown);
+
+    font-family:'Fredoka',sans-serif;
+
+    font-size:32px;
+
+    font-style:italic;
+
+    opacity:.5;
+
+    text-anchor:middle;
+}
+
+.archery-hint{
+
+    fill:var(--brown);
+
+    font-family:'Fredoka',sans-serif;
+
+    font-size:24px;
+
+    font-weight:600;
+
+    letter-spacing:.1em;
+
+    text-anchor:middle;
+
+    opacity:.35;
+
+    animation:pulseHint 1.8s ease-in-out infinite;
+}
+
+@keyframes pulseHint{
+
+    0%,100%{
+        opacity:.2;
+    }
+
+    50%{
+        opacity:.55;
+    }
+}
+
+#heartTarget{
+
+    filter:
+        drop-shadow(
+            0 0 35px rgba(230,50,110,.5)
+        );
+}
+
+.bow-limb{
+
+    fill:none;
+
+    stroke:#58352d;
+
+    stroke-width:14;
+
+    stroke-linecap:round;
+}
+
+#bowString{
+
+    fill:none;
+
+    stroke:#927b68;
+
+    stroke-width:2.5;
+}
+
+#arrowShaft{
+
+    stroke:#58352d;
+
+    stroke-width:6;
+
+    stroke-linecap:round;
+}
+
 /* =========================================================
    SCENE 2 — TITLE
 ========================================================= */
 
 #scene-title{
+
     display:flex;
 
     flex-direction:column;
+
     justify-content:center;
+
     align-items:center;
 
     text-align:center;
 
     background:
         radial-gradient(
-            circle at 50% 40%,
-            #ec6295 0%,
-            #d42a68 55%,
-            #9b1749 100%
+            ellipse at 50% 25%,
+            #f56b9a 0%,
+            #cf185b 58%,
+            #8d0d40 100%
         );
 }
 
 .title-eyebrow{
-    color:#fff4f7;
 
-    opacity:.8;
+    color:white;
 
-    font-size:17px;
+    opacity:.75;
+
+    font-family:'Fredoka',sans-serif;
 
     font-style:italic;
 
-    margin-bottom:12px;
+    font-size:15px;
 }
 
-.big-title{
-    margin:0;
+.main-title{
+
+    margin:5px 0;
 
     color:white;
 
     font-family:'Playfair Display',serif;
 
-    font-size:clamp(52px,14vw,76px);
+    font-size:clamp(48px,14vw,76px);
 
     line-height:.95;
 
     text-shadow:
-        0 8px 30px rgba(0,0,0,.25);
+        0 7px 25px rgba(0,0,0,.25);
 }
 
 .title-line{
-    width:150px;
 
-    height:15px;
+    width:145px;
 
-    margin:18px 0 8px;
+    height:18px;
 
-    border-bottom:3px solid #f4c96b;
+    border-bottom:
+        3px solid var(--gold);
 
     border-radius:50%;
 }
 
 .title-sub{
+
     color:white;
 
-    opacity:.78;
+    opacity:.75;
 
-    font-size:15px;
+    font-family:'Fredoka',sans-serif;
 
     font-style:italic;
+
+    font-size:14px;
+
+    margin-top:12px;
 }
 
 /* =========================================================
@@ -240,26 +348,36 @@ body{
 
 #scene-tree{
 
-    position:absolute;
-    inset:0;
-
-    overflow:hidden;
-
     background:
         radial-gradient(
-            ellipse at 50% 15%,
-            #fffefb 0%,
-            #fff7ec 36%,
-            #fdeade 72%,
-            #fbdccf 100%
+            ellipse at 50% 18%,
+            #fffefa 0%,
+            #fff7ef 42%,
+            #fde4d3 100%
         );
+
+    overflow:hidden;
+}
+
+/* =========================================================
+   TREE AREA
+========================================================= */
+
+#treeArea{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
 }
 
 /* =========================================================
    TREE SVG
 ========================================================= */
 
-#tree-svg{
+#treeSvg{
 
     position:absolute;
 
@@ -274,30 +392,30 @@ body{
     pointer-events:none;
 }
 
-/* ---------------------------------------------------------
-   TREE TRUNK
---------------------------------------------------------- */
+/* =========================================================
+   MAIN TRUNK
+========================================================= */
 
-.tree-trunk{
+.trunk{
 
     fill:url(#trunkGradient);
 
     transform-origin:center bottom;
 
-    clip-path:inset(100% 0 0 0);
+    transform:scaleY(0);
 
     transition:
-        clip-path 2.8s cubic-bezier(.22,.8,.25,1);
+        transform 2.2s cubic-bezier(.18,.85,.25,1);
 }
 
-.tree-trunk.grow{
+.tree-grown .trunk{
 
-    clip-path:inset(0 0 0 0);
+    transform:scaleY(1);
 }
 
-/* ---------------------------------------------------------
+/* =========================================================
    BRANCHES
---------------------------------------------------------- */
+========================================================= */
 
 .branch{
 
@@ -306,64 +424,74 @@ body{
     stroke:url(#branchGradient);
 
     stroke-linecap:round;
+
     stroke-linejoin:round;
 
-    stroke-dasharray:1000;
+    stroke-dasharray:1200;
 
-    stroke-dashoffset:1000;
+    stroke-dashoffset:1200;
 
     transition:
-        stroke-dashoffset 2s cubic-bezier(.22,.8,.25,1);
+        stroke-dashoffset 1.7s cubic-bezier(.2,.8,.25,1);
+}
+
+.tree-grown .branch{
+
+    stroke-dashoffset:0;
 }
 
 .branch.main{
-    stroke-width:27;
+    stroke-width:22;
 }
 
 .branch.secondary{
-    stroke-width:15;
+    stroke-width:12;
 }
 
 .branch.small{
     stroke-width:7;
 }
 
-.branch.grow{
-    stroke-dashoffset:0;
-}
-
 /* =========================================================
    HEART CANOPY
 ========================================================= */
 
-#heart-canopy{
+#heartCanopy{
 
     position:absolute;
-
-    /*
-       LARGE HEART
-       This is intentionally much larger than
-       the previous version.
-    */
 
     left:50%;
 
     top:7%;
 
-    width:92%;
+    width:94%;
 
-    height:64%;
+    height:58%;
 
     transform:
-        translateX(-50%);
+        translateX(-50%)
+        scale(.45);
+
+    opacity:0;
+
+    transition:
+        transform 1.8s cubic-bezier(.2,.85,.25,1),
+        opacity 1.2s ease;
 
     pointer-events:none;
+}
 
-    overflow:visible;
+.tree-grown #heartCanopy{
+
+    transform:
+        translateX(-50%)
+        scale(1);
+
+    opacity:1;
 }
 
 /* =========================================================
-   CANOPY HEARTS
+   HEART PARTICLES
 ========================================================= */
 
 .canopy-heart{
@@ -378,135 +506,189 @@ body{
 
     line-height:1;
 
-    user-select:none;
+    font-family:
+        Arial,
+        sans-serif;
 
     filter:
         drop-shadow(
-            0 2px 3px rgba(160,40,80,.18)
+            0 1px 3px rgba(190,30,80,.18)
         );
 
     transition:
-        transform .55s cubic-bezier(.34,1.56,.64,1),
-        opacity .4s ease;
+        transform .55s cubic-bezier(.2,1.6,.4,1),
+        opacity .35s ease;
 }
 
-.canopy-heart.bloom{
-
-    opacity:1;
+.canopy-heart.show{
 
     transform:
         translate(-50%,-50%)
         scale(1);
+
+    opacity:.92;
+}
+
+.canopy-heart.soft{
+
+    opacity:.55;
 }
 
 /* =========================================================
-   HEART FLOATERS
+   TREE TEXT
 ========================================================= */
 
-.floating-heart{
+#treeText{
 
     position:absolute;
 
-    z-index:4;
-
-    pointer-events:none;
-
-    animation:
-        floatHeart
-        5s
-        ease-in-out
-        infinite;
-
-    opacity:.65;
-}
-
-@keyframes floatHeart{
-
-    0%,100%{
-        transform:translateY(0) rotate(-5deg);
-    }
-
-    50%{
-        transform:translateY(-18px) rotate(5deg);
-    }
-}
-
-/* =========================================================
-   BIRTHDAY TEXT
-========================================================= */
-
-.tree-message{
-
-    position:absolute;
-
-    left:7%;
+    left:6%;
 
     bottom:8%;
 
-    z-index:20;
+    width:52%;
 
-    width:46%;
+    z-index:50;
 
     pointer-events:none;
 }
 
 .tree-eyebrow{
 
-    margin:0 0 5px;
+    margin:0 0 3px;
 
-    color:#603737;
+    color:#5b3731;
 
     font-family:'Playfair Display',serif;
 
-    font-size:clamp(13px,3.5vw,17px);
-
     font-style:italic;
+
+    font-size:clamp(12px,3.3vw,16px);
 
     font-weight:700;
 }
 
-.birthday-script{
+.tree-title{
 
     margin:0;
 
-    color:#d21865;
+    color:#d21862;
 
     font-family:'Yellowtail',cursive;
 
-    font-size:clamp(55px,15vw,78px);
+    font-size:clamp(47px,13vw,70px);
 
-    line-height:.82;
+    line-height:.85;
 
     text-shadow:
-        0 3px 12px rgba(200,30,90,.12);
+        0 2px 8px rgba(190,20,80,.12);
 }
 
 .tree-sub{
 
-    margin:16px 0 0;
+    margin:13px 0 0;
 
-    color:#5c3734;
+    color:#5b3731;
 
     font-family:'Playfair Display',serif;
 
-    font-size:clamp(12px,3.4vw,16px);
+    font-size:clamp(11px,3vw,15px);
 
-    font-weight:600;
+    font-weight:700;
 
-    line-height:1.2;
+    white-space:nowrap;
 }
 
 /* =========================================================
-   REDUCED MOTION
+   FLOATING HEARTS OUTSIDE CANOPY
 ========================================================= */
 
-@media(prefers-reduced-motion:reduce){
+.floating-heart{
 
-    *{
-        animation-duration:.01ms!important;
-        transition-duration:.01ms!important;
+    position:absolute;
+
+    z-index:10;
+
+    pointer-events:none;
+
+    opacity:.65;
+
+    animation:
+        floatHeart
+        6s
+        ease-in-out
+        infinite;
+}
+
+@keyframes floatHeart{
+
+    0%,100%{
+        transform:
+            translateY(0)
+            rotate(-4deg);
     }
 
+    50%{
+        transform:
+            translateY(-18px)
+            rotate(4deg);
+    }
+}
+
+/* =========================================================
+   HEART BURST
+========================================================= */
+
+.burst-heart{
+
+    position:absolute;
+
+    pointer-events:none;
+
+    z-index:100;
+
+    animation:
+        burst 1.2s ease-out forwards;
+}
+
+@keyframes burst{
+
+    0%{
+        opacity:1;
+        transform:
+            translate(0,0)
+            scale(.5);
+    }
+
+    100%{
+        opacity:0;
+        transform:
+            translate(
+                var(--x),
+                var(--y)
+            )
+            scale(1.1);
+    }
+}
+
+/* =========================================================
+   SMALL SCREEN
+========================================================= */
+
+@media(max-width:380px){
+
+    #treeText{
+        left:5%;
+        bottom:7%;
+    }
+
+    .tree-title{
+        font-size:45px;
+    }
+
+    .tree-sub{
+        font-size:10px;
+    }
 }
 
 </style>
@@ -518,798 +700,648 @@ body{
 
 <div id="stage">
 
-<button id="restart">restart</button>
+<button id="restartBtn">restart</button>
 
 
-<!-- ======================================================
-     SCENE 1 — ARCHERY
-====================================================== -->
+<!-- =====================================================
+     SCENE 1
+===================================================== -->
 
 <section
     id="scene-archery"
-    class="scene active">
+    class="scene active"
+>
 
 <svg
-    id="archery-svg"
+    id="archerySvg"
     viewBox="0 0 1080 1920"
-    preserveAspectRatio="xMidYMid slice">
+    preserveAspectRatio="xMidYMid slice"
+>
 
-    <text
-        x="540"
-        y="230"
-        text-anchor="middle"
-        font-family="Fredoka"
-        font-style="italic"
-        font-size="34"
-        fill="#4a2e2e"
-        opacity=".55">
-
-        a little something, for you
-
-    </text>
+<text
+    x="540"
+    y="220"
+    class="archery-caption"
+>
+a little something, for you
+</text>
 
 
-    <!-- TARGET -->
+<!-- HEART TARGET -->
 
-    <g
-        id="target"
-        transform="translate(540,420)">
+<g
+    id="heartTarget"
+    transform="translate(540,420)"
+>
 
-        <text
-            text-anchor="middle"
-            dominant-baseline="central"
-            font-size="150">
+<text
+    x="0"
+    y="0"
+    text-anchor="middle"
+    dominant-baseline="central"
+    font-size="155"
+>
+💓
+</text>
 
-            💓
-
-        </text>
-
-    </g>
-
-
-    <!-- BURST -->
-
-    <g id="burst"></g>
+</g>
 
 
-    <!-- BOW -->
+<!-- BURST -->
 
-    <g id="bow"
-       transform="translate(230,1330)">
-
-        <path
-            d="M0,-140 Q60,-70 0,0"
-            fill="none"
-            stroke="#5b3a2c"
-            stroke-width="14"
-            stroke-linecap="round"/>
-
-        <path
-            d="M0,0 Q60,70 0,140"
-            fill="none"
-            stroke="#5b3a2c"
-            stroke-width="14"
-            stroke-linecap="round"/>
-
-        <polyline
-            id="string"
-            points="0,-140 0,0 0,140"
-            fill="none"
-            stroke="#8a7a63"
-            stroke-width="2.5"/>
-
-        <g id="arrow">
-
-            <line
-                x1="0"
-                y1="0"
-                x2="150"
-                y2="0"
-                stroke="#5b3a2c"
-                stroke-width="6"
-                stroke-linecap="round"/>
-
-            <polygon
-                points="150,0 130,-9 130,9"
-                fill="#eab35e"/>
-
-            <polygon
-                points="0,0 -18,-10 -10,0 -18,10"
-                fill="#e2447f"/>
-
-        </g>
-
-    </g>
+<g id="burstLayer"></g>
 
 
-    <text
-        id="pull-hint"
-        x="540"
-        y="1660"
-        text-anchor="middle"
-        font-family="Fredoka"
-        font-size="22"
-        font-weight="600"
-        letter-spacing="3"
-        fill="#4a2e2e"
-        opacity=".4">
+<!-- BOW -->
 
-        PULL &amp; RELEASE
+<g id="bowGroup">
 
-    </text>
+<path
+    id="limbTop"
+    class="bow-limb"
+    d="M0,-140 Q65,-70 0,0"
+/>
+
+<path
+    id="limbBottom"
+    class="bow-limb"
+    d="M0,0 Q65,70 0,140"
+/>
+
+<polyline
+    id="bowString"
+    points="0,-140 0,0 0,140"
+/>
+
+
+<g id="arrowGroup">
+
+<line
+    id="arrowShaft"
+    x1="0"
+    y1="0"
+    x2="150"
+    y2="0"
+/>
+
+<polygon
+    points="150,0 130,-10 130,10"
+    fill="#eab35e"
+/>
+
+<polygon
+    points="0,0 -18,-10 -10,0 -18,10"
+    fill="#e2447f"
+/>
+
+</g>
+
+</g>
+
+
+<text
+    id="pullHint"
+    class="archery-hint"
+    x="540"
+    y="1660"
+>
+PULL &amp; RELEASE
+</text>
 
 </svg>
 
 </section>
 
 
-<!-- ======================================================
-     SCENE 2 — TITLE
-====================================================== -->
+<!-- =====================================================
+     SCENE 2
+===================================================== -->
 
 <section
     id="scene-title"
-    class="scene">
+    class="scene"
+>
 
-    <div class="title-eyebrow">
-        make a wish...
-    </div>
+<p class="title-eyebrow">
+make a wish...
+</p>
 
-    <h1 class="big-title">
-        Happy<br>
-        Birthday
-    </h1>
+<h1 class="main-title">
+Happy<br>
+Birthday
+</h1>
 
-    <div class="title-line"></div>
+<div class="title-line"></div>
 
-    <div class="title-sub">
-        to someone worth celebrating
-    </div>
+<p class="title-sub">
+to someone worth celebrating
+</p>
 
 </section>
 
 
-<!-- ======================================================
-     SCENE 3 — TREE
-====================================================== -->
+<!-- =====================================================
+     SCENE 3
+===================================================== -->
 
 <section
     id="scene-tree"
-    class="scene">
+    class="scene"
+>
+
+<div id="treeArea">
 
 
-<!-- ======================================================
-     SVG TREE
-====================================================== -->
+<!-- TREE SVG -->
 
 <svg
-    id="tree-svg"
-    viewBox="0 0 1000 1600"
-    preserveAspectRatio="none">
+    id="treeSvg"
+    viewBox="0 0 600 1000"
+    preserveAspectRatio="none"
+>
 
 <defs>
 
-    <!-- TRUNK GRADIENT -->
+<!-- TRUNK GRADIENT -->
 
-    <linearGradient
-        id="trunkGradient"
-        x1="0"
-        y1="0"
-        x2="1"
-        y2="0">
+<linearGradient
+    id="trunkGradient"
+    x1="0"
+    y1="0"
+    x2="1"
+    y2="0"
+>
 
-        <stop
-            offset="0%"
-            stop-color="#32181a"/>
+<stop
+    offset="0%"
+    stop-color="#3b2021"
+/>
 
-        <stop
-            offset="45%"
-            stop-color="#5a2925"/>
+<stop
+    offset="35%"
+    stop-color="#5b2e2d"
+/>
 
-        <stop
-            offset="70%"
-            stop-color="#47201f"/>
+<stop
+    offset="65%"
+    stop-color="#683432"
+/>
 
-        <stop
-            offset="100%"
-            stop-color="#261316"/>
+<stop
+    offset="100%"
+    stop-color="#3b1e20"
+/>
 
-    </linearGradient>
+</linearGradient>
 
 
-    <!-- BRANCH GRADIENT -->
+<!-- BRANCH GRADIENT -->
 
-    <linearGradient
-        id="branchGradient"
-        x1="0"
-        y1="1"
-        x2="1"
-        y2="0">
+<linearGradient
+    id="branchGradient"
+    x1="0"
+    y1="0"
+    x2="1"
+    y2="0"
+>
 
-        <stop
-            offset="0%"
-            stop-color="#35191a"/>
+<stop
+    offset="0%"
+    stop-color="#482425"
+/>
 
-        <stop
-            offset="50%"
-            stop-color="#542623"/>
+<stop
+    offset="50%"
+    stop-color="#60302e"
+/>
 
-        <stop
-            offset="100%"
-            stop-color="#301719"/>
+<stop
+    offset="100%"
+    stop-color="#3c2021"
+/>
 
-    </linearGradient>
+</linearGradient>
 
 </defs>
 
 
-<!-- ======================================================
+<!-- =====================================================
      MAIN TRUNK
-====================================================== -->
+===================================================== -->
 
 <path
-    id="main-trunk"
-    class="tree-trunk"
-
+    class="trunk"
     d="
-        M450 1600
+    M272 1000
 
-        C442 1450
-        440 1310
-        445 1160
+    C268 900 270 820 276 740
 
-        C450 1050
-        455 950
-        448 850
+    C281 665 278 610 283 555
 
-        C440 780
-        425 730
-        400 690
+    C288 510 293 470 300 430
 
-        C430 720
-        465 735
-        500 750
+    C307 470 312 510 317 555
 
-        C535 735
-        570 720
-        600 690
+    C322 610 319 665 324 740
 
-        C575 735
-        560 790
-        552 850
+    C330 820 332 900 328 1000
 
-        C545 950
-        550 1050
-        555 1160
-
-        C560 1310
-        558 1450
-        550 1600
-
-        Z
+    Z
     "
 />
 
 
-<!-- ======================================================
-     MAIN LEFT BRANCH
-====================================================== -->
+<!-- =====================================================
+     MAJOR LEFT BRANCH
+===================================================== -->
 
 <path
     class="branch main"
-
     d="
-        M500 770
-        C460 700
-        410 620
-        350 545
-        C290 470
-        225 420
-        145 375
+    M300 570
+
+    C270 525 238 480 205 435
+
+    C170 387 135 355 90 325
     "
 />
 
 
-<!-- ======================================================
-     MAIN RIGHT BRANCH
-====================================================== -->
+<!-- LEFT INNER -->
+
+<path
+    class="branch secondary"
+    d="
+    M246 490
+
+    C220 430 208 360 205 300
+
+    C203 270 202 245 204 215
+    "
+/>
+
+
+<!-- LEFT OUTER -->
+
+<path
+    class="branch secondary"
+    d="
+    M205 435
+
+    C165 420 125 398 90 370
+
+    C65 350 48 328 38 305
+    "
+/>
+
+
+<!-- LEFT TOP -->
+
+<path
+    class="branch secondary"
+    d="
+    M220 385
+
+    C175 335 145 285 125 235
+
+    C112 205 104 180 103 150
+    "
+/>
+
+
+<!-- LEFT MIDDLE -->
+
+<path
+    class="branch secondary"
+    d="
+    M178 350
+
+    C155 310 145 265 145 225
+
+    C145 190 149 165 155 135
+    "
+/>
+
+
+<!-- =====================================================
+     MAJOR RIGHT BRANCH
+===================================================== -->
 
 <path
     class="branch main"
-
     d="
-        M500 770
-        C540 700
-        590 620
-        650 545
-        C710 470
-        775 420
-        855 375
+    M300 570
+
+    C330 525 362 480 395 435
+
+    C430 387 465 355 510 325
     "
 />
 
 
-<!-- ======================================================
-     CENTER BRANCH
-====================================================== -->
-
-<path
-    class="branch main"
-
-    d="
-        M500 760
-        C500 680
-        500 585
-        500 485
-        C500 400
-        500 325
-        500 250
-    "
-/>
-
-
-<!-- ======================================================
-     LEFT SECONDARY BRANCHES
-====================================================== -->
+<!-- RIGHT INNER -->
 
 <path
     class="branch secondary"
     d="
-        M350 545
-        C315 480
-        300 415
-        305 345
+    M354 490
+
+    C380 430 392 360 395 300
+
+    C397 270 398 245 396 215
     "
 />
+
+
+<!-- RIGHT OUTER -->
 
 <path
     class="branch secondary"
     d="
-        M290 470
-        C245 430
-        205 390
-        170 330
+    M395 435
+
+    C435 420 475 398 510 370
+
+    C535 350 552 328 562 305
     "
 />
+
+
+<!-- RIGHT TOP -->
 
 <path
     class="branch secondary"
     d="
-        M225 420
-        C205 370
-        205 320
-        220 275
+    M380 385
+
+    C425 335 455 285 475 235
+
+    C488 205 496 180 497 150
     "
 />
+
+
+<!-- RIGHT MIDDLE -->
 
 <path
     class="branch secondary"
     d="
-        M410 620
-        C375 570
-        365 510
-        375 445
+    M422 350
+
+    C445 310 455 265 455 225
+
+    C455 190 451 165 445 135
     "
 />
+
+
+<!-- =====================================================
+     CENTRAL BRANCHES
+===================================================== -->
 
 <path
     class="branch secondary"
     d="
-        M335 535
-        C275 520
-        225 495
-        185 455
+    M300 430
+
+    C280 370 270 310 270 250
+
+    C270 210 276 175 285 135
     "
 />
 
-
-<!-- ======================================================
-     RIGHT SECONDARY BRANCHES
-====================================================== -->
 
 <path
     class="branch secondary"
     d="
-        M650 545
-        C685 480
-        700 415
-        695 345
-    "
-/>
+    M300 430
 
-<path
-    class="branch secondary"
-    d="
-        M710 470
-        C755 430
-        795 390
-        830 330
-    "
-/>
+    C320 370 330 310 330 250
 
-<path
-    class="branch secondary"
-    d="
-        M775 420
-        C795 370
-        795 320
-        780 275
-    "
-/>
-
-<path
-    class="branch secondary"
-    d="
-        M590 620
-        C625 570
-        635 510
-        625 445
-    "
-/>
-
-<path
-    class="branch secondary"
-    d="
-        M665 535
-        C725 520
-        775 495
-        815 455
+    C330 210 324 175 315 135
     "
 />
 
 
-<!-- ======================================================
-     CENTER SECONDARY BRANCHES
-====================================================== -->
-
-<path
-    class="branch secondary"
-    d="
-        M500 485
-        C465 430
-        440 375
-        435 315
-    "
-/>
-
-<path
-    class="branch secondary"
-    d="
-        M500 485
-        C535 430
-        560 375
-        565 315
-    "
-/>
-
-<path
-    class="branch secondary"
-    d="
-        M500 400
-        C465 350
-        455 300
-        460 245
-    "
-/>
-
-<path
-    class="branch secondary"
-    d="
-        M500 400
-        C535 350
-        545 300
-        540 245
-    "
-/>
-
-
-<!-- ======================================================
-     SMALL LEFT TWIGS
-====================================================== -->
+<!-- =====================================================
+     SMALL TWIGS LEFT
+===================================================== -->
 
 <path
     class="branch small"
-    d="
-        M305 345
-        C275 315
-        255 285
-        250 250
-    "
+    d="M204 300 C180 275 160 250 145 225"
 />
 
 <path
     class="branch small"
-    d="
-        M305 345
-        C330 315
-        340 280
-        335 245
-    "
+    d="M204 300 C225 270 235 240 238 210"
 />
 
 <path
     class="branch small"
-    d="
-        M220 275
-        C195 250
-        180 225
-        180 195
-    "
+    d="M125 235 C100 215 82 195 70 172"
 />
 
 <path
     class="branch small"
-    d="
-        M220 275
-        C245 250
-        255 225
-        255 195
-    "
+    d="M125 235 C132 205 134 180 130 155"
 />
 
 <path
     class="branch small"
-    d="
-        M375 445
-        C350 415
-        340 385
-        345 350
-    "
+    d="M155 135 C140 115 132 95 130 75"
 />
 
 <path
     class="branch small"
-    d="
-        M375 445
-        C400 415
-        410 385
-        405 350
-    "
+    d="M155 135 C170 110 177 90 177 68"
 />
 
 <path
     class="branch small"
-    d="
-        M185 455
-        C160 435
-        145 410
-        145 380
-    "
+    d="M90 370 C65 350 48 330 40 305"
 />
 
 
-<!-- ======================================================
-     SMALL RIGHT TWIGS
-====================================================== -->
+<!-- =====================================================
+     SMALL TWIGS RIGHT
+===================================================== -->
 
 <path
     class="branch small"
-    d="
-        M695 345
-        C725 315
-        745 285
-        750 250
-    "
+    d="M396 300 C420 275 440 250 455 225"
 />
 
 <path
     class="branch small"
-    d="
-        M695 345
-        C670 315
-        660 280
-        665 245
-    "
+    d="M396 300 C375 270 365 240 362 210"
 />
 
 <path
     class="branch small"
-    d="
-        M780 275
-        C805 250
-        820 225
-        820 195
-    "
+    d="M475 235 C500 215 518 195 530 172"
 />
 
 <path
     class="branch small"
-    d="
-        M780 275
-        C755 250
-        745 225
-        745 195
-    "
+    d="M475 235 C468 205 466 180 470 155"
 />
 
 <path
     class="branch small"
-    d="
-        M625 445
-        C650 415
-        660 385
-        655 350
-    "
+    d="M445 135 C460 115 468 95 470 75"
 />
 
 <path
     class="branch small"
-    d="
-        M625 445
-        C600 415
-        590 385
-        595 350
-    "
+    d="M445 135 C430 110 423 90 423 68"
 />
 
 <path
     class="branch small"
-    d="
-        M815 455
-        C840 435
-        855 410
-        855 380
-    "
+    d="M510 370 C535 350 552 330 560 305"
 />
 
 
-<!-- ======================================================
-     CENTER TWIGS
-====================================================== -->
+<!-- =====================================================
+     CENTRAL TWIGS
+===================================================== -->
 
 <path
     class="branch small"
-    d="
-        M435 315
-        C415 285
-        405 255
-        410 225
-    "
+    d="M285 135 C270 110 265 90 266 65"
 />
 
 <path
     class="branch small"
-    d="
-        M435 315
-        C455 285
-        465 255
-        460 225
-    "
+    d="M285 135 C300 110 307 90 307 65"
 />
 
 <path
     class="branch small"
-    d="
-        M565 315
-        C585 285
-        595 255
-        590 225
-    "
+    d="M315 135 C300 110 293 90 293 65"
 />
 
 <path
     class="branch small"
-    d="
-        M565 315
-        C545 285
-        535 255
-        540 225
-    "
+    d="M315 135 C330 110 337 90 337 65"
 />
 
 </svg>
 
 
-<!-- ======================================================
+<!-- =====================================================
      HEART CANOPY
-====================================================== -->
+===================================================== -->
 
-<div id="heart-canopy"></div>
+<div id="heartCanopy"></div>
 
 
-<!-- ======================================================
-     FLOATING DECORATIVE HEARTS
-====================================================== -->
+<!-- FLOATING HEARTS -->
 
 <div
     class="floating-heart"
-    style="left:8%;top:35%;font-size:25px;">
-    💗
+    style="
+        left:7%;
+        top:24%;
+        font-size:25px;
+        color:#efb84e;
+    "
+>
+💛
 </div>
 
 <div
     class="floating-heart"
-    style="left:88%;top:45%;font-size:23px;animation-delay:1s;">
-    💛
+    style="
+        right:8%;
+        top:39%;
+        font-size:22px;
+        color:#f36f9d;
+        animation-delay:1s;
+    "
+>
+💗
 </div>
 
 <div
     class="floating-heart"
-    style="left:12%;top:72%;font-size:20px;animation-delay:2s;">
-    💕
+    style="
+        left:14%;
+        top:63%;
+        font-size:18px;
+        color:#f8a8c4;
+        animation-delay:2s;
+    "
+>
+♡
 </div>
 
 <div
     class="floating-heart"
-    style="right:8%;top:75%;font-size:26px;animation-delay:1.5s;">
-    💗
+    style="
+        right:12%;
+        top:67%;
+        font-size:25px;
+        color:#e52f76;
+        animation-delay:3s;
+    "
+>
+💗
 </div>
 
-<div
-    class="floating-heart"
-    style="left:6%;top:15%;font-size:18px;animation-delay:3s;">
-    💛
+
+<!-- =====================================================
+     BIRTHDAY TEXT
+===================================================== -->
+
+<div id="treeText">
+
+<p class="tree-eyebrow">
+and... make it count
+</p>
+
+<h2 class="tree-title">
+Happy<br>
+Birthday
+</h2>
+
+<p class="tree-sub">
+here's to a year that blooms
+</p>
+
 </div>
-
-
-<!-- ======================================================
-     BIRTHDAY MESSAGE
-====================================================== -->
-
-<div class="tree-message">
-
-    <p class="tree-eyebrow">
-        and... make it count
-    </p>
-
-    <h2 class="birthday-script">
-        Happy<br>
-        Birthday
-    </h2>
-
-    <p class="tree-sub">
-        here's to a year that blooms
-    </p>
 
 </div>
 
 </section>
 
 </div>
+
 </div>
 
 
 <script>
 
 /* =========================================================
-   CONFIGURATION
+   CONFIG
 ========================================================= */
 
 const CONFIG = {
 
-    /*
-       Number of hearts in canopy.
+    recipientName: "",
 
-       650 gives a dense canopy without becoming
-       completely unreadable on mobile.
-    */
+    titleTime: 2700,
 
-    heartCount: 650,
+    trunkTime: 2200,
 
-    /*
-       Delay before canopy starts blooming
-       after branches finish.
-    */
+    heartCount: 650
 
-    canopyDelay: 3200,
-
-    /*
-       Time between individual heart blooms.
-    */
-
-    bloomSpacing: 5,
-
-    /*
-       Heart sizes.
-    */
-
-    minHeartSize: 8,
-    maxHeartSize: 19
 };
 
 
 /* =========================================================
-   SCENES
+   SCENE ELEMENTS
 ========================================================= */
 
 const archeryScene =
@@ -1321,12 +1353,21 @@ const titleScene =
 const treeScene =
     document.getElementById("scene-tree");
 
+const treeArea =
+    document.getElementById("treeArea");
+
+const heartCanopy =
+    document.getElementById("heartCanopy");
+
+const restartBtn =
+    document.getElementById("restartBtn");
+
 
 function showScene(scene){
 
-    document
-        .querySelectorAll(".scene")
-        .forEach(s => s.classList.remove("active"));
+    archeryScene.classList.remove("active");
+    titleScene.classList.remove("active");
+    treeScene.classList.remove("active");
 
     scene.classList.add("active");
 }
@@ -1337,73 +1378,106 @@ function showScene(scene){
 ========================================================= */
 
 const svg =
-    document.getElementById("archery-svg");
+    document.getElementById("archerySvg");
 
-const bow =
-    document.getElementById("bow");
+const bowGroup =
+    document.getElementById("bowGroup");
 
-const arrow =
-    document.getElementById("arrow");
+const arrowGroup =
+    document.getElementById("arrowGroup");
 
-const string =
-    document.getElementById("string");
+const bowString =
+    document.getElementById("bowString");
 
-const target =
-    document.getElementById("target");
+const limbTop =
+    document.getElementById("limbTop");
 
-const burst =
-    document.getElementById("burst");
+const limbBottom =
+    document.getElementById("limbBottom");
 
-const hint =
-    document.getElementById("pull-hint");
+const pullHint =
+    document.getElementById("pullHint");
+
+const heartTarget =
+    document.getElementById("heartTarget");
+
+const burstLayer =
+    document.getElementById("burstLayer");
 
 
-const bowX = 230;
-const bowY = 1330;
+const bowAnchor = {
+    x:230,
+    y:1330
+};
 
-const targetX = 540;
-const targetY = 420;
+const targetPoint = {
+    x:540,
+    y:420
+};
 
-const dx = targetX - bowX;
-const dy = targetY - bowY;
+
+const dx =
+    targetPoint.x - bowAnchor.x;
+
+const dy =
+    targetPoint.y - bowAnchor.y;
 
 const distance =
     Math.hypot(dx,dy);
 
-const dirX = dx / distance;
-const dirY = dy / distance;
+const dir = {
+    x:dx/distance,
+    y:dy/distance
+};
 
 const angle =
-    Math.atan2(dy,dx) * 180 / Math.PI;
+    Math.atan2(dir.y,dir.x)
+    *180/Math.PI;
 
 
-bow.setAttribute(
+bowGroup.setAttribute(
     "transform",
-    `translate(${bowX},${bowY}) rotate(${angle})`
+    `translate(${bowAnchor.x},${bowAnchor.y}) rotate(${angle})`
 );
 
 
-const REST = 150;
-const MAX_PULL = 130;
-const FIRE_LIMIT = 40;
+const REST_OFFSET = 150;
+
+const MAX_PULL = 135;
+
+const FIRE_THRESHOLD = 42;
 
 let pulling = false;
+
 let pullAmount = 0;
 
 
 function setArrow(pull){
 
     const nock =
-        REST - pull;
+        REST_OFFSET-pull;
 
-    arrow.setAttribute(
+    arrowGroup.setAttribute(
         "transform",
         `translate(${nock},0)`
     );
 
-    string.setAttribute(
+    bowString.setAttribute(
         "points",
-        `0,-140 ${nock-REST},0 0,140`
+        `0,-140 ${nock-REST_OFFSET},0 0,140`
+    );
+
+    const flex =
+        60 + pull*.25;
+
+    limbTop.setAttribute(
+        "d",
+        `M0,-140 Q${flex},-70 0,0`
+    );
+
+    limbBottom.setAttribute(
+        "d",
+        `M0,0 Q${flex},70 0,140`
     );
 }
 
@@ -1426,9 +1500,10 @@ function svgPoint(event){
     point.y =
         event.clientY;
 
-    return point.matrixTransform(
-        svg.getScreenCTM().inverse()
-    );
+    const matrix =
+        svg.getScreenCTM().inverse();
+
+    return point.matrixTransform(matrix);
 }
 
 
@@ -1438,46 +1513,47 @@ function svgPoint(event){
 
 svg.addEventListener(
     "pointerdown",
-    event => {
+    function(event){
 
         pulling = true;
 
-        hint.style.opacity = "0";
+        pullHint.style.opacity = 0;
 
         svg.setPointerCapture(
             event.pointerId
         );
 
         event.preventDefault();
+
     }
 );
 
 
 /* =========================================================
-   MOVE PULL
+   MOVE
 ========================================================= */
 
 svg.addEventListener(
     "pointermove",
-    event => {
+    function(event){
 
-        if(!pulling) return;
+        if(!pulling)return;
 
-        const p =
+        const point =
             svgPoint(event);
 
         const vx =
-            p.x - bowX;
+            point.x-bowAnchor.x;
 
         const vy =
-            p.y - bowY;
+            point.y-bowAnchor.y;
 
         const along =
-            vx * dirX +
-            vy * dirY;
+            vx*dir.x+
+            vy*dir.y;
 
         let pull =
-            REST - along;
+            REST_OFFSET-along;
 
         pull =
             Math.max(
@@ -1488,11 +1564,13 @@ svg.addEventListener(
                 )
             );
 
-        pullAmount = pull;
+        pullAmount =
+            pull;
 
         setArrow(pull);
 
         event.preventDefault();
+
     }
 );
 
@@ -1503,33 +1581,30 @@ svg.addEventListener(
 
 svg.addEventListener(
     "pointerup",
-    () => {
+    function(){
 
-        if(!pulling) return;
+        if(!pulling)return;
 
         pulling = false;
 
         if(
             pullAmount >=
-            FIRE_LIMIT
+            FIRE_THRESHOLD
         ){
 
             fireArrow();
 
         }else{
 
-            springBack();
+            resetBow();
 
         }
+
     }
 );
 
 
-/* =========================================================
-   SPRING BACK
-========================================================= */
-
-function springBack(){
+function resetBow(){
 
     const start =
         pullAmount;
@@ -1538,25 +1613,27 @@ function springBack(){
         performance.now();
 
     const duration =
-        300;
+        280;
 
 
-    function animate(time){
+    function animate(){
 
         const progress =
             Math.min(
                 1,
-                (time-startTime)/
-                duration
+                (performance.now()-startTime)
+                /duration
             );
 
         const value =
-            start *
-            (1-progress);
+            start*(1-progress);
 
         setArrow(value);
 
-        if(progress < 1){
+        pullAmount =
+            value;
+
+        if(progress<1){
 
             requestAnimationFrame(
                 animate
@@ -1564,12 +1641,11 @@ function springBack(){
 
         }else{
 
-            pullAmount = 0;
-
-            hint.style.opacity = ".4";
+            pullHint.style.opacity =
+                .35;
         }
-    }
 
+    }
 
     requestAnimationFrame(
         animate
@@ -1584,42 +1660,44 @@ function springBack(){
 function fireArrow(){
 
     const nock =
-        REST - pullAmount;
+        REST_OFFSET-pullAmount;
+
 
     const rad =
-        angle * Math.PI / 180;
+        angle*Math.PI/180;
 
 
     const startX =
-        bowX +
-        nock * Math.cos(rad);
+        bowAnchor.x+
+        nock*Math.cos(rad);
+
 
     const startY =
-        bowY +
-        nock * Math.sin(rad);
+        bowAnchor.y+
+        nock*Math.sin(rad);
 
 
-    const flying =
+    const arrow =
         document.createElementNS(
             "http://www.w3.org/2000/svg",
             "g"
         );
 
 
-    flying.innerHTML = `
+    arrow.innerHTML = `
 
         <line
             x1="0"
             y1="0"
             x2="150"
             y2="0"
-            stroke="#5b3a2c"
+            stroke="#58352d"
             stroke-width="6"
             stroke-linecap="round"
         />
 
         <polygon
-            points="150,0 130,-9 130,9"
+            points="150,0 130,-10 130,10"
             fill="#eab35e"
         />
 
@@ -1631,7 +1709,13 @@ function fireArrow(){
     `;
 
 
-    svg.appendChild(flying);
+    arrow.setAttribute(
+        "transform",
+        `translate(${startX},${startY}) rotate(${angle})`
+    );
+
+
+    svg.appendChild(arrow);
 
 
     setArrow(0);
@@ -1639,69 +1723,71 @@ function fireArrow(){
     pullAmount = 0;
 
 
-    const start =
+    const startTime =
         performance.now();
 
     const duration =
-        650;
+        500;
 
 
-    function animate(time){
+    function fly(){
 
-        const p =
+        const progress =
             Math.min(
                 1,
-                (time-start)/duration
+                (performance.now()-startTime)
+                /duration
             );
 
-        const ease =
-            1 -
-            Math.pow(
-                1-p,
+        const eased =
+            1-Math.pow(
+                1-progress,
                 3
             );
 
 
-        const currentX =
-            startX +
-            (targetX-startX)
-            * ease;
-
-        const currentY =
-            startY +
-            (targetY-startY)
-            * ease;
+        const travel =
+            distance-70;
 
 
-        flying.setAttribute(
+        const x =
+            startX+
+            dir.x*
+            travel*
+            eased;
+
+
+        const y =
+            startY+
+            dir.y*
+            travel*
+            eased;
+
+
+        arrow.setAttribute(
             "transform",
-            `
-            translate(
-                ${currentX},
-                ${currentY}
-            )
-            rotate(${angle})
-            `
+            `translate(${x},${y}) rotate(${angle})`
         );
 
 
-        if(p < 1){
+        if(progress<1){
 
             requestAnimationFrame(
-                animate
+                fly
             );
 
         }else{
 
-            flying.remove();
+            arrow.remove();
 
             heartHit();
+
         }
+
     }
 
-
     requestAnimationFrame(
-        animate
+        fly
     );
 }
 
@@ -1712,7 +1798,7 @@ function fireArrow(){
 
 function heartHit(){
 
-    target.animate(
+    heartTarget.animate(
 
         [
             {
@@ -1722,19 +1808,22 @@ function heartHit(){
 
             {
                 transform:
-                "translate(540px,420px) scale(1.5)"
+                "translate(540px,470px) scale(1.4)"
             },
 
             {
                 transform:
-                "translate(540px,420px) scale(1)"
+                "translate(540px,560px) scale(.9)",
+                opacity:0
             }
+
         ],
 
         {
-            duration:600,
-            easing:"ease-out"
+            duration:800,
+            easing:"cubic-bezier(.2,.7,.3,1)"
         }
+
     );
 
 
@@ -1742,23 +1831,24 @@ function heartHit(){
 
 
     setTimeout(
-        () => {
+        function(){
 
             showScene(titleScene);
 
-            setTimeout(
-                () => {
+        },
+        650
+    );
 
-                    showScene(treeScene);
 
-                    startTree();
+    setTimeout(
+        function(){
 
-                },
-                2600
-            );
+            showScene(treeScene);
+
+            startTree();
 
         },
-        850
+        650 + CONFIG.titleTime
     );
 }
 
@@ -1775,7 +1865,7 @@ function createBurst(){
         "💖",
         "🩷",
         "💛",
-        "✨"
+        "💞"
     ];
 
 
@@ -1785,86 +1875,72 @@ function createBurst(){
         i++
     ){
 
-        const el =
+        const heart =
             document.createElementNS(
                 "http://www.w3.org/2000/svg",
                 "text"
             );
 
 
-        el.textContent =
+        heart.textContent =
             hearts[
-                i %
-                hearts.length
+                Math.floor(
+                    Math.random()*hearts.length
+                )
             ];
 
 
-        el.setAttribute(
+        heart.setAttribute(
             "x",
-            targetX
+            540
         );
 
-        el.setAttribute(
+        heart.setAttribute(
             "y",
-            targetY
+            420
         );
 
-        el.setAttribute(
+        heart.setAttribute(
             "font-size",
-            18 +
-            Math.random()*18
+            20+Math.random()*20
         );
-
-        el.setAttribute(
-            "text-anchor",
-            "middle"
-        );
-
-
-        burst.appendChild(el);
 
 
         const x =
-            (Math.random()-.5)
-            * 300;
+            (Math.random()-.5)*300;
 
         const y =
-            -(100 +
-            Math.random()*250);
+            -(100+Math.random()*300);
 
 
-        el.animate(
+        heart.style.setProperty(
+            "--x",
+            x+"px"
+        );
 
-            [
-                {
-                    transform:
-                    "translate(0,0)",
-                    opacity:1
-                },
+        heart.style.setProperty(
+            "--y",
+            y+"px"
+        );
 
-                {
-                    transform:
-                    `translate(${x}px,${y}px)`,
-                    opacity:0
-                }
-            ],
 
-            {
-                duration:
-                    1000 +
-                    Math.random()*500,
+        heart.classList.add(
+            "burst-heart"
+        );
 
-                easing:
-                    "ease-out"
-            }
+
+        burstLayer.appendChild(
+            heart
         );
 
 
         setTimeout(
-            () => el.remove(),
-            1700
+            ()=>heart.remove(),
+            1300
         );
+
     }
+
 }
 
 
@@ -1872,99 +1948,36 @@ function createBurst(){
    TREE START
 ========================================================= */
 
+let treeStarted = false;
+
+
 function startTree(){
 
-    const trunk =
-        document.getElementById(
-            "main-trunk"
-        );
+    if(treeStarted)return;
+
+    treeStarted = true;
 
 
-    const branches =
-        document.querySelectorAll(
-            ".branch"
-        );
-
-
-    /*
-       TRUNK FIRST
-    */
-
-    trunk.classList.add(
-        "grow"
+    treeArea.classList.add(
+        "tree-grown"
     );
 
 
-    /*
-       BRANCHES GROW AFTER
-       THE TRUNK
-    */
+    createHeartCanopy();
 
-    setTimeout(
-        () => {
-
-            branches.forEach(
-                (branch,index) => {
-
-                    setTimeout(
-                        () => {
-
-                            branch.classList.add(
-                                "grow"
-                            );
-
-                        },
-
-                        index * 75
-                    );
-
-                }
-            );
-
-        },
-        1100
-    );
-
-
-    /*
-       CANOPY STARTS ONLY AFTER
-       TREE STRUCTURE EXISTS
-    */
-
-    setTimeout(
-        createHeartCanopy,
-        CONFIG.canopyDelay
-    );
 }
 
 
 /* =========================================================
-   HEART SHAPE TEST
+   MATHEMATICAL HEART
 ========================================================= */
 
-/*
-   This is the important part.
-
-   Instead of randomly putting hearts
-   into a rectangle, every heart is tested
-   against the mathematical HEART CURVE.
-
-   This keeps the canopy actually heart-shaped.
-*/
-
-function insideHeart(x,y){
-
-    /*
-       Standard implicit heart equation:
-
-       (x²+y²-1)³ - x²y³ <= 0
-    */
+function heartEquation(x,y){
 
     const a =
-        x*x +
-        y*y -
+        x*x+
+        y*y-
         1;
-
 
     return (
         a*a*a -
@@ -1979,211 +1992,221 @@ function insideHeart(x,y){
 
 function createHeartCanopy(){
 
-    const canopy =
-        document.getElementById(
-            "heart-canopy"
-        );
+    heartCanopy.innerHTML = "";
 
 
-    canopy.innerHTML = "";
+    /*
+       This is the important part.
+
+       Instead of randomly scattering hearts
+       across a rectangle, we mathematically
+       keep EVERY heart inside the heart curve.
+    */
 
 
-    const hearts = [
-        "💗",
-        "💕",
-        "💖",
-        "🩷",
-        "💞",
-        "💓",
-        "💘",
-        "💝",
-        "💟",
-        "❤️",
-        "💛"
+    const hearts = [];
+
+    const glyphs = [
+        "♥",
+        "♥",
+        "♥",
+        "♥",
+        "❤"
     ];
 
 
     /*
-       Get actual size.
-
-       This is important for mobile
-       because the viewport is different
-       on every phone.
+       More hearts near the outside edge,
+       slightly fewer in the center.
     */
 
-    const width =
-        canopy.clientWidth;
-
-    const height =
-        canopy.clientHeight;
-
-
-    /*
-       We generate a dense cloud.
-
-       Hearts are NOT generated in a
-       simple rectangle.
-
-       They are generated ONLY when
-       insideHeart() returns true.
-    */
-
-    const positions = [];
-
-
-    let attempts = 0;
-
-
-    while(
-        positions.length <
-        CONFIG.heartCount &&
-        attempts < 100000
+    for(
+        let i=0;
+        i<CONFIG.heartCount;
+        i++
     ){
 
-        attempts++;
+        let x;
+        let y;
+
+        let attempts = 0;
+
+
+        do{
+
+            /*
+               Generate heart coordinates.
+
+               y is inverted because screen
+               coordinates increase downward.
+            */
+
+            x =
+                Math.random()*2.25-
+                1.125;
+
+            y =
+                Math.random()*2.0-
+                1.0;
+
+            attempts++;
+
+
+            if(attempts>100)
+                break;
+
+
+        }while(
+            !heartEquation(
+                x,
+                -y
+            )
+        );
 
 
         /*
-           Mathematical heart coordinates.
+           Map mathematical heart
+           to canopy dimensions.
         */
 
-        const x =
-            Math.random()*2.35 -
-            1.175;
+        const left =
+            50+
+            (x/1.125)*50;
 
-        const y =
-            Math.random()*2.2 -
-            1.1;
 
+        const top =
+            50+
+            (y/1.0)*50;
+
+
+        const heart =
+            document.createElement(
+                "span"
+            );
+
+
+        heart.className =
+            "canopy-heart";
+
+
+        heart.textContent =
+            glyphs[
+                Math.floor(
+                    Math.random()*
+                    glyphs.length
+                )
+            ];
+
+
+        /*
+           SMALL hearts.
+
+           This prevents the huge
+           clutter seen in your screenshot.
+        */
+
+        const size =
+            7+
+            Math.random()*8;
+
+
+        heart.style.fontSize =
+            size+"px";
+
+
+        /*
+           Consistent pink palette.
+        */
+
+        const colors = [
+
+            "#e52f76",
+            "#ef4382",
+            "#f56d9b",
+            "#f795b5",
+            "#d91e63",
+            "#ee5b91",
+            "#f8a9c2"
+
+        ];
+
+
+        heart.style.color =
+            colors[
+                Math.floor(
+                    Math.random()*
+                    colors.length
+                )
+            ];
+
+
+        heart.style.left =
+            left+"%";
+
+
+        heart.style.top =
+            top+"%";
+
+
+        /*
+           Random depth.
+
+           Some hearts appear
+           slightly transparent.
+        */
 
         if(
-            insideHeart(
-                x,
-                y
-            )
+            Math.random()<.18
         ){
 
-            positions.push({
-                x,
-                y
-            });
+            heart.classList.add(
+                "soft"
+            );
 
         }
+
+
+        hearts.push(
+            heart
+        );
+
+        heartCanopy.appendChild(
+            heart
+        );
+
     }
 
 
     /*
-       Sort from upper to lower.
+       Bloom in controlled waves.
 
-       This creates a more natural
-       blooming sequence.
+       This creates the appearance
+       of the canopy growing.
     */
 
-    positions.sort(
-        (a,b) =>
-            a.y - b.y
-    );
+    hearts.forEach(
+        function(heart,index){
 
+            const delay =
+                500+
+                index*2.4+
+                Math.random()*900;
 
-    positions.forEach(
-        (p,index) => {
-
-            const heart =
-                document.createElement(
-                    "span"
-                );
-
-
-            heart.className =
-                "canopy-heart";
-
-
-            heart.textContent =
-                hearts[
-                    Math.floor(
-                        Math.random() *
-                        hearts.length
-                    )
-                ];
-
-
-            /*
-               Convert mathematical
-               heart coordinates into
-               screen coordinates.
-            */
-
-            const left =
-                width/2 +
-                (p.x/1.175) *
-                (width/2);
-
-
-            const top =
-                height/2 -
-                (p.y/1.1) *
-                (height/2);
-
-
-            heart.style.left =
-                left + "px";
-
-
-            heart.style.top =
-                top + "px";
-
-
-            /*
-               Random but controlled size.
-            */
-
-            const size =
-                CONFIG.minHeartSize +
-                Math.random() *
-                (
-                    CONFIG.maxHeartSize -
-                    CONFIG.minHeartSize
-                );
-
-
-            heart.style.fontSize =
-                size + "px";
-
-
-            /*
-               Small rotation prevents
-               mechanical appearance.
-            */
-
-            heart.style.marginLeft =
-                (Math.random()*5-2.5)
-                + "px";
-
-
-            canopy.appendChild(
-                heart
-            );
-
-
-            /*
-               Bloom from top toward bottom.
-            */
 
             setTimeout(
-                () => {
+                function(){
 
                     heart.classList.add(
-                        "bloom"
+                        "show"
                     );
 
                 },
-
-                index *
-                CONFIG.bloomSpacing
+                delay
             );
 
         }
     );
+
 }
 
 
@@ -2191,16 +2214,14 @@ function createHeartCanopy(){
    RESTART
 ========================================================= */
 
-document
-    .getElementById("restart")
-    .addEventListener(
-        "click",
-        () => {
+restartBtn.addEventListener(
+    "click",
+    function(){
 
-            location.reload();
+        location.reload();
 
-        }
-    );
+    }
+);
 
 </script>
 
