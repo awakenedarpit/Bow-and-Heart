@@ -45,6 +45,7 @@
     background: linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
     overflow:hidden;
     box-shadow:0 0 60px rgba(0,0,0,.5);
+    touch-action:none;
   }
 
   .scene{
@@ -85,26 +86,10 @@
     text-align:center;
   }
 
-#scene-archery,
-#archery-svg {
-  touch-action: none !important;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-}
-
-#archery-svg {
-  cursor: grab;
-}
-
-#archery-svg.dragging {
-  cursor: grabbing;
-}
-
   /* ==================== SCENE 1 — ARCHERY ==================== */
   #scene-archery{ background: radial-gradient(ellipse at 50% 34%, #ffd9c2 0%, var(--cream) 55%, var(--cream-2) 100%); }
 
-  #archery-svg{ width:100%; height:100%; touch-action:none; user-select:none; }
+  #archery-svg{ position:relative; z-index:2; width:100%; height:100%; touch-action:none; user-select:none; }
 
   .archer-hint{
     fill:var(--ink); opacity:.4; font-family:'Fredoka',sans-serif;
@@ -223,9 +208,10 @@
   /* ==================== ambient floating emojis ==================== */
   .float-layer{
     position:absolute; inset:0; overflow:hidden; pointer-events:none;
+    z-index:0;
   }
   .float-emoji{
-    position:absolute; bottom:-8%;
+    position:absolute; bottom:-8%; pointer-events:none;
     opacity:0; line-height:1; will-change:transform,opacity;
     animation-name: float-up; animation-timing-function: linear; animation-iteration-count: infinite;
     filter:drop-shadow(0 2px 6px rgba(0,0,0,.06));
@@ -392,832 +378,198 @@
   }
 
   /* =====================================================
-   SCENE 1 — BOW + ARROW
-   MOBILE-FIRST DRAG SYSTEM
-   ===================================================== */
-
-const svg = document.getElementById('archery-svg');
-const bowGroup = document.getElementById('bow-group');
-const arrowGroup = document.getElementById('arrow-group');
-const bowString = document.getElementById('bow-string');
-const limbTop = document.getElementById('limb-top');
-const limbBottom = document.getElementById('limb-bottom');
-const heartTarget = document.getElementById('heart-target');
-const burstLayer = document.getElementById('burst-layer');
-const pullHint = document.getElementById('pull-hint');
-
-
-/* =====================================================
-   BOW + TARGET POSITIONS
-   ===================================================== */
-
-const bowAnchor = {
-  x: 230,
-  y: 1330
-};
-
-const targetPoint = {
-  x: 540,
-  y: 420
-};
-
-
-/* =====================================================
-   CALCULATE AIM DIRECTION
-   ===================================================== */
-
-const dx = targetPoint.x - bowAnchor.x;
-const dy = targetPoint.y - bowAnchor.y;
-
-const distance = Math.hypot(dx, dy);
-
-const dir = {
-  x: dx / distance,
-  y: dy / distance
-};
-
-const angleDeg =
-  Math.atan2(dir.y, dir.x) * 180 / Math.PI;
-
-
-/* =====================================================
-   ROTATE BOW TOWARD HEART
-   ===================================================== */
-
-bowGroup.setAttribute(
-  'transform',
-  `translate(${bowAnchor.x},${bowAnchor.y}) rotate(${angleDeg})`
-);
-
-
-/* =====================================================
-   SETTINGS
-   ===================================================== */
-
-const MAX_PULL = 140;
-const FIRE_THRESHOLD = 35;
-
-let isPulling = false;
-let pullAmount = 0;
-
-let startPointer = {
-  x: 0,
-  y: 0
-};
-
-
-/* =====================================================
-   DRAW ARROW
-   ===================================================== */
-
-function setArrow(pull) {
-
-  pull = Math.max(
-    0,
-    Math.min(MAX_PULL, pull)
-  );
-
-  pullAmount = pull;
-
-  /*
-     Arrow moves backwards when pulled.
-  */
-
-  arrowGroup.setAttribute(
-    'transform',
-    `translate(${-pull},0)`
-  );
-
-
-  /*
-     String follows the arrow nock.
-  */
-
-  bowString.setAttribute(
-    'points',
-    `0,-140 ${-pull},0 0,140`
-  );
-
-
-  /*
-     Bow bends as it is pulled.
-  */
-
-  const bend = 60 + pull * 0.45;
-
-  limbTop.setAttribute(
-    'd',
-    `M0,-140 Q${bend},-70 ${-pull},0`
-  );
-
-  limbBottom.setAttribute(
-    'd',
-    `M${-pull},0 Q${bend},70 0,140`
-  );
-}
-
-
-/* Initial position */
-
-setArrow(0);
-
-
-/* =====================================================
-   CONVERT SCREEN POSITION → SVG POSITION
-   ===================================================== */
-
-function getSVGPoint(event) {
-
-  const point = svg.createSVGPoint();
-
-  point.x = event.clientX;
-  point.y = event.clientY;
-
-  const matrix = svg.getScreenCTM();
-
-  if (!matrix) return null;
-
-  return point.matrixTransform(
-    matrix.inverse()
-  );
-}
-
-
-/* =====================================================
-   START DRAG
-   ===================================================== */
-
-function startBowDrag(event) {
-
-  if (isPulling) return;
-
-  const point = getSVGPoint(event);
-
-  if (!point) return;
-
-  isPulling = true;
-
-  startPointer.x = point.x;
-  startPointer.y = point.y;
-
-  pullAmount = 0;
-
-  svg.classList.add('dragging');
-
-  pullHint.style.opacity = '0';
-
-  /*
-     IMPORTANT:
-     Capture the pointer so dragging continues even if
-     the finger leaves the SVG.
-  */
-
-  try {
-    svg.setPointerCapture(event.pointerId);
-  } catch (e) {}
-
-  event.preventDefault();
-}
-
-
-/* =====================================================
-   DRAG
-   ===================================================== */
-
-function dragBow(event) {
-
-  if (!isPulling) return;
-
-  const point = getSVGPoint(event);
-
-  if (!point) return;
-
-
-  /*
-     How far has the finger moved from where it started?
-  */
-
-  const moveX =
-    point.x - startPointer.x;
-
-  const moveY =
-    point.y - startPointer.y;
-
-
-  /*
-     Project the movement onto the OPPOSITE direction
-     of the arrow.
-
-     This means:
-       drag toward bottom-left = pull
-  */
-
-  const pull =
-    -(moveX * dir.x + moveY * dir.y);
-
-
-  /*
-     Only allow pulling backward.
-  */
-
-  const actualPull =
-    Math.max(
-      0,
-      Math.min(MAX_PULL, pull)
-    );
-
-
-  setArrow(actualPull);
-
-  event.preventDefault();
-}
-
-
-/* =====================================================
-   RELEASE
-   ===================================================== */
-
-function releaseBow(event) {
-
-  if (!isPulling) return;
-
-  isPulling = false;
-
-  svg.classList.remove('dragging');
-
-  try {
-    svg.releasePointerCapture(event.pointerId);
-  } catch (e) {}
-
-
-  /*
-     Enough pull = FIRE
-  */
-
-  if (pullAmount >= FIRE_THRESHOLD) {
-
-    fireArrow(pullAmount);
-
-  } else {
-
-    springBowBack();
+     SCENE 1 — bow + arrow interaction
+     ===================================================== */
+  const svg = document.getElementById('archery-svg');
+  const bowGroup = document.getElementById('bow-group');
+  const arrowGroup = document.getElementById('arrow-group');
+  const bowString = document.getElementById('bow-string');
+  const limbTop = document.getElementById('limb-top');
+  const limbBottom = document.getElementById('limb-bottom');
+  const heartTarget = document.getElementById('heart-target');
+  const burstLayer = document.getElementById('burst-layer');
+  const pullHint = document.getElementById('pull-hint');
+
+  // bow sits at (230,1330); heart sits at (540,420) — aim direction:
+  const bowAnchor = {x:230, y:1330};
+  const targetPoint = {x:540, y:420};
+  const dx = targetPoint.x - bowAnchor.x, dy = targetPoint.y - bowAnchor.y;
+  const dist = Math.hypot(dx,dy);
+  const dir = {x:dx/dist, y:dy/dist};              // unit vector bow -> heart
+  const angleDeg = Math.atan2(dir.y, dir.x) * 180/Math.PI;
+
+  bowGroup.setAttribute('transform', `translate(${bowAnchor.x},${bowAnchor.y}) rotate(${angleDeg})`);
+
+  const REST_OFFSET = 150;   // arrow tip distance from bow at rest, along aim dir
+  const MAX_PULL = 130;      // how far back the string can be drawn
+  const FIRE_THRESHOLD = 22; // minimum pull to actually loose the arrow
+
+  let pulling = false;
+  let pullAmount = 0;
+  let pointerStart = null;
+
+  function setArrow(pull){
+    // arrow slides back along local +x axis (bow-local coords, since group is rotated)
+    const nockX = REST_OFFSET - pull;
+    arrowGroup.setAttribute('transform', `translate(${nockX},0)`);
+    // string bends to meet the nock point
+    bowString.setAttribute('points', `0,-140 ${nockX - REST_OFFSET},0 0,140`);
+    // limbs flex slightly with pull
+    const flex = 60 + pull*0.25;
+    limbTop.setAttribute('d', `M0,-140 Q${flex},-70 0,0`);
+    limbBottom.setAttribute('d', `M0,0 Q${flex},70 0,140`);
   }
-}
-
-
-/* =====================================================
-   SPRING BOW BACK
-   ===================================================== */
-
-function springBowBack() {
-
-  const start = pullAmount;
-
-  const startTime =
-    performance.now();
-
-  const duration = 250;
-
-
-  function animateBack(now) {
-
-    const progress =
-      Math.min(
-        1,
-        (now - startTime) / duration
-      );
-
-    const eased =
-      1 - Math.pow(1 - progress, 3);
-
-    const value =
-      start * (1 - eased);
-
-    setArrow(value);
-
-
-    if (progress < 1) {
-
-      requestAnimationFrame(
-        animateBack
-      );
-
-    } else {
-
-      setArrow(0);
-
-      pullHint.style.opacity = '.4';
-    }
-  }
-
-  requestAnimationFrame(
-    animateBack
-  );
-}
-
-
-/* =====================================================
-   POINTER EVENTS
-   ===================================================== */
-
-svg.addEventListener(
-  'pointerdown',
-  startBowDrag,
-  { passive: false }
-);
-
-svg.addEventListener(
-  'pointermove',
-  dragBow,
-  { passive: false }
-);
-
-svg.addEventListener(
-  'pointerup',
-  releaseBow
-);
-
-svg.addEventListener(
-  'pointercancel',
-  releaseBow
-);
-
-
-/* =====================================================
-   FIRE ARROW
-   ===================================================== */
-
-function fireArrow(power) {
-
-  /*
-     Starting position of the pulled arrow.
-  */
-
-  const startLocalX =
-    -power;
-
-
-  const rad =
-    angleDeg * Math.PI / 180;
-
-
-  const startWorld = {
-
-    x:
-      bowAnchor.x +
-      startLocalX * Math.cos(rad),
-
-    y:
-      bowAnchor.y +
-      startLocalX * Math.sin(rad)
-  };
-
-
-  /*
-     Create flying arrow.
-  */
-
-  const flying =
-    document.createElementNS(
-      'http://www.w3.org/2000/svg',
-      'g'
-    );
-
-
-  flying.setAttribute(
-    'transform',
-    `translate(${startWorld.x},${startWorld.y})
-     rotate(${angleDeg})`
-  );
-
-
-  flying.innerHTML = `
-    <line
-      x1="0"
-      y1="0"
-      x2="150"
-      y2="0"
-      stroke="#5b3a2c"
-      stroke-width="6"
-      stroke-linecap="round"
-    />
-
-    <polygon
-      points="150,0 130,-9 130,9"
-      fill="#eab35e"
-    />
-
-    <polygon
-      points="0,0 -18,-10 -10,0 -18,10"
-      fill="#e2447f"
-    />
-  `;
-
-
-  svg.appendChild(flying);
-
-
-  /*
-     Reset bow.
-  */
-
   setArrow(0);
 
-  pullAmount = 0;
+  function toSvgPoint(evt){
+    const pt = svg.createSVGPoint();
+    const t = evt.touches ? evt.touches[0] : evt;
+    pt.x = t.clientX; pt.y = t.clientY;
+    const ctm = svg.getScreenCTM().inverse();
+    return pt.matrixTransform(ctm);
+  }
 
-
-  /* =================================================
-     ARROW FLIGHT
-     ================================================= */
-
-  const startTime =
-    performance.now();
-
-  const duration = 420;
-
-
-  const flightDistance =
-    Math.hypot(
-      targetPoint.x - startWorld.x,
-      targetPoint.y - startWorld.y
-    ) - 45;
-
-
-  function animateArrow(now) {
-
-    const progress =
-      Math.min(
-        1,
-        (now - startTime) / duration
-      );
-
-
-    const eased =
-      1 - Math.pow(
-        1 - progress,
-        3
-      );
-
-
-    const travel =
-      flightDistance * eased;
-
-
-    const x =
-      startWorld.x +
-      dir.x * travel;
-
-    const y =
-      startWorld.y +
-      dir.y * travel;
-
-
-    flying.setAttribute(
-      'transform',
-      `translate(${x},${y})
-       rotate(${angleDeg})`
-    );
-
-
-    if (progress < 1) {
-
-      requestAnimationFrame(
-        animateArrow
-      );
-
+  function startPull(evt){
+    pulling = true;
+    pointerStart = toSvgPoint(evt);
+    pullHint.style.opacity = 0;
+    try { svg.setPointerCapture(evt.pointerId); } catch(e){}
+    evt.preventDefault();
+  }
+  function movePull(evt){
+    if (!pulling) return;
+    const p = toSvgPoint(evt);
+    // project (p - bowAnchor) onto -dir to get how far "back" they've pulled
+    const vx = p.x - bowAnchor.x, vy = p.y - bowAnchor.y;
+    const along = vx*dir.x + vy*dir.y;         // distance along aim direction (negative = pulled back)
+    let pull = REST_OFFSET - along;
+    pull = Math.max(0, Math.min(MAX_PULL, pull));
+    pullAmount = pull;
+    setArrow(pull);
+    evt.preventDefault();
+  }
+  function endPull(evt){
+    if (!pulling) return;
+    pulling = false;
+    if (pullAmount >= FIRE_THRESHOLD){
+      fireArrow(pullAmount);
     } else {
-
-      flying.remove();
-
-      hitHeart();
+      springBack();
     }
   }
 
-
-  requestAnimationFrame(
-    animateArrow
-  );
-}
-
-
-/* =====================================================
-   HEART HIT
-   ===================================================== */
-
-function hitHeart() {
-
-  /*
-     IMPACT
-  */
-
-  heartTarget.animate(
-
-    [
-      {
-        transform: 'scale(1)'
-      },
-
-      {
-        transform: 'scale(1.4)'
-      },
-
-      {
-        transform: 'scale(1.05)'
-      }
-    ],
-
-    {
-      duration: 260,
-      easing: 'ease-out',
-      fill: 'forwards'
+  function springBack(){
+    const start = pullAmount, t0 = performance.now(), dur=260;
+    function step(t){
+      const k = Math.min(1,(t-t0)/dur);
+      const val = start*(1-k);
+      setArrow(val);
+      pullAmount = val;
+      if (k<1) requestAnimationFrame(step);
+      else { pullHint.style.opacity = .4; }
     }
-  );
+    requestAnimationFrame(step);
+  }
 
+  svg.addEventListener('pointerdown', startPull);
+  window.addEventListener('pointermove', movePull);
+  window.addEventListener('pointerup', endPull);
 
-  /*
-     HEART DROP
-  */
+  function fireArrow(power){
+    // detach a flying arrow copy and animate it from the nock to the heart
+    const nockX = REST_OFFSET - power;
+    const startLocal = {x:nockX, y:0};
+    // convert bow-local point to svg-root coords (rotate + translate)
+    const rad = angleDeg*Math.PI/180;
+    const startWorld = {
+      x: bowAnchor.x + startLocal.x*Math.cos(rad) - startLocal.y*Math.sin(rad),
+      y: bowAnchor.y + startLocal.x*Math.sin(rad) + startLocal.y*Math.cos(rad)
+    };
 
-  setTimeout(() => {
+    const flying = document.createElementNS('http://www.w3.org/2000/svg','g');
+    flying.setAttribute('transform', `translate(${startWorld.x},${startWorld.y}) rotate(${angleDeg})`);
+    flying.innerHTML = `
+      <line x1="0" y1="0" x2="150" y2="0" stroke="#5b3a2c" stroke-width="6" stroke-linecap="round"/>
+      <polygon points="150,0 130,-9 130,9" fill="#eab35e"/>
+      <polygon points="0,0 -18,-10 -10,0 -18,10" fill="#e2447f"/>
+    `;
+    svg.appendChild(flying);
 
+    // reset the bow's static arrow instantly (it "left the string")
+    setArrow(0); pullAmount = 0;
+
+    const t0 = performance.now(), dur = 340;
+    const travelDist = Math.hypot(targetPoint.x-startWorld.x, targetPoint.y-startWorld.y) - 60;
+    function step(t){
+      const k = Math.min(1, (t-t0)/dur);
+      const ease = 1 - Math.pow(1-k, 3);
+      const d = travelDist*ease;
+      flying.setAttribute('transform', `translate(${startWorld.x + dir.x*d},${startWorld.y + dir.y*d}) rotate(${angleDeg})`);
+      if (k<1) requestAnimationFrame(step);
+      else { flying.remove(); hitHeart(); }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function hitHeart(){
+    // pulse the heart on impact
     heartTarget.animate(
-
-      [
-
-        {
-          transform:
-            'translate(0,0) rotate(0deg) scale(1.05)',
-          opacity: 1
-        },
-
-        {
-          transform:
-            'translate(-30px,120px) rotate(-25deg) scale(1)',
-          opacity: 1
-        },
-
-        {
-          transform:
-            'translate(-60px,520px) rotate(-70deg) scale(.85)',
-          opacity: 0
-        }
-
-      ],
-
-      {
-        duration: 700,
-        easing:
-          'cubic-bezier(.55,0,.85,.4)',
-        fill: 'forwards'
-      }
+      [{transform:'scale(1)'}, {transform:'scale(1.4)'}, {transform:'scale(1.05)'}],
+      {duration:260, easing:'ease-out', fill:'forwards'}
     );
 
-  }, 260);
-
-
-  /*
-     HEART BURST
-  */
-
-  const glyphs = [
-    '💗',
-    '💛',
-    '💕',
-    '🩷'
-  ];
-
-
-  for (let i = 0; i < 16; i++) {
-
-    const heart =
-      document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'text'
+    // then it drops — gravity + tumble + fade
+    setTimeout(() => {
+      const dropAnim = heartTarget.animate(
+        [
+          {transform:'translate(0px,0px) rotate(0deg) scale(1.05)', opacity:1, offset:0},
+          {transform:'translate(-30px,120px) rotate(-25deg) scale(1)', opacity:1, offset:.4},
+          {transform:'translate(-60px,520px) rotate(-70deg) scale(.85)', opacity:0, offset:1}
+        ],
+        {duration:700, easing:'cubic-bezier(.55,0,.85,.4)', fill:'forwards'}
       );
+    }, 260);
 
+    // burst of small hearts drifting up & out
+    const glyphs = ['💗','💛','💕','🩷'];
+    for (let i=0;i<16;i++){
+      const el = document.createElementNS('http://www.w3.org/2000/svg','text');
+      const ang = (Math.random()*Math.PI*2);
+      const r0 = 10;
+      const x0 = targetPoint.x + Math.cos(ang)*r0;
+      const y0 = targetPoint.y + Math.sin(ang)*r0;
+      el.setAttribute('x', x0); el.setAttribute('y', y0);
+      el.setAttribute('font-size', 20+Math.random()*22);
+      el.setAttribute('text-anchor','middle');
+      el.setAttribute('opacity','0');
+      el.textContent = glyphs[i % glyphs.length];
+      burstLayer.appendChild(el);
 
-    const angle =
-      Math.random() * Math.PI * 2;
+      const dxp = (Math.random()-0.5)*260;
+      const dyp = -(120 + Math.random()*260);
+      const dur = 1100 + Math.random()*700;
+      const delay = Math.random()*150;
+      const anim = el.animate(
+        [
+          {transform:'translate(0px,0px)', opacity:0, offset:0},
+          {transform:'translate(0px,0px)', opacity:1, offset:0.08},
+          {transform:`translate(${dxp}px,${dyp}px)`, opacity:0, offset:1}
+        ],
+        {duration:dur, delay:delay, easing:'cubic-bezier(.2,.6,.3,1)', fill:'forwards'}
+      );
+    }
 
-
-    const radius = 10;
-
-
-    heart.setAttribute(
-      'x',
-      targetPoint.x +
-      Math.cos(angle) * radius
-    );
-
-    heart.setAttribute(
-      'y',
-      targetPoint.y +
-      Math.sin(angle) * radius
-    );
-
-
-    heart.setAttribute(
-      'font-size',
-      20 + Math.random() * 22
-    );
-
-
-    heart.setAttribute(
-      'text-anchor',
-      'middle'
-    );
-
-
-    heart.setAttribute(
-      'opacity',
-      '0'
-    );
-
-
-    heart.textContent =
-      glyphs[i % glyphs.length];
-
-
-    burstLayer.appendChild(heart);
-
-
-    const driftX =
-      (Math.random() - .5) * 260;
-
-    const driftY =
-      -(120 + Math.random() * 260);
-
-
-    heart.animate(
-
-      [
-
-        {
-          transform:
-            'translate(0,0)',
-          opacity: 0
-        },
-
-        {
-          transform:
-            'translate(0,0)',
-          opacity: 1
-        },
-
-        {
-          transform:
-            `translate(${driftX}px,${driftY}px)`,
-          opacity: 0
-        }
-
-      ],
-
-      {
-        duration:
-          1100 + Math.random() * 700,
-
-        delay:
-          Math.random() * 150,
-
-        easing:
-          'cubic-bezier(.2,.6,.3,1)',
-
-        fill: 'forwards'
-      }
-    );
+    // wait for the pulse + drop to finish, then slide into the title scene
+    setTimeout(() => {
+      showScene('title');
+      setTimeout(() => {
+        showScene('tree');
+        growTree();
+      }, CONFIG.autoAdvanceTitleMs);
+    }, 260 + 700 + 120);
   }
 
-
-  /* =================================================
-     NEXT SCENES
-     ================================================= */
-
-  setTimeout(() => {
-
-    showScene('title');
-
-    setTimeout(() => {
-
-      showScene('tree');
-
-      growTree();
-
-    }, CONFIG.autoAdvanceTitleMs);
-
-  }, 1080);
-} ---------------------------------------------------
-     HEART BURST
-     --------------------------------------------------- */
-
-  const glyphs = [
-    '💗',
-    '💛',
-    '💕',
-    '🩷'
-  ];
-
-  for (let i = 0; i < 16; i++) {
-
-    const el =
-      document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'text'
-      );
-
-    const angle =
-      Math.random() * Math.PI * 2;
-
-    const radius = 10;
-
-    const x =
-      targetPoint.x +
-      Math.cos(angle) * radius;
-
-    const y =
-      targetPoint.y +
-      Math.sin(angle) * radius;
-
-    el.setAttribute('x', x);
-    el.setAttribute('y', y);
-
-    el.setAttribute(
-      'font-size',
-      20 + Math.random() * 22
-    );
-
-    el.setAttribute(
-      'text-anchor',
-      'middle'
-    );
-
-    el.setAttribute(
-      'opacity',
-      '0'
-    );
-
-    el.textContent =
-      glyphs[i % glyphs.length];
-
-    burstLayer.appendChild(el);
-
-    const driftX =
-      (Math.random() - .5) * 260;
-
-    const driftY =
-      -(120 + Math.random() * 260);
-
-    const duration =
-      1100 + Math.random() * 700;
-
-    const delay =
-      Math.random() * 150;
-
-    el.animate(
-      [
-        {
-          transform: 'translate(0px,0px)',
-          opacity: 0,
-          offset: 0
-        },
-        {
-          transform: 'translate(0px,0px)',
-          opacity: 1,
-          offset: .08
-        },
-        {
-          transform:
-            `translate(${driftX}px,${driftY}px)`,
-          opacity: 0,
-          offset: 1
-        }
-      ],
-      {
-        duration: duration,
-        delay: delay,
-        easing: 'cubic-bezier(.2,.6,.3,1)',
-        fill: 'forwards'
-      }
-    );
-  }
-
-  /* ---------------------------------------------------
-     MOVE TO TITLE → TREE
-     --------------------------------------------------- */
-
-  setTimeout(() => {
-
-    showScene('title');
-
-    setTimeout(() => {
-
-      showScene('tree');
-
-      growTree();
-
-    }, CONFIG.autoAdvanceTitleMs);
-
-  }, 260 + 700 + 120);
-} =====================================================
+  /* =====================================================
      SCENE 3 — trunk grows, heart-shaped canopy blooms
      ===================================================== */
   const trunkEl = document.getElementById('trunk');
