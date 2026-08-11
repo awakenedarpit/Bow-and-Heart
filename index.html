@@ -221,7 +221,7 @@
 
         <g id="heart-anchor" transform="translate(540,420)">
           <g id="heart-target" class="heart-glow">
-            <text text-anchor="middle" dominant-baseline="central" font-size="150">💗</text>
+            <text text-anchor="middle" dominant-baseline="central" font-size="150">💓</text>
           </g>
         </g>
 
@@ -467,7 +467,7 @@
     }, 260);
 
     // burst of small hearts drifting up & out
-    const glyphs = ['💗','💛','💕','🩷'];
+    const glyphs = ['💗','💛','💕','🌹','🩷','💖','💓','🩵','💚','💙','💜','🧡','🌟','✨','💫','💞','♥️'];
     for (let i=0;i<16;i++){
       const el = document.createElementNS('http://www.w3.org/2000/svg','text');
       const ang = (Math.random()*Math.PI*2);
@@ -547,7 +547,7 @@
       pts.forEach((p, i) => {
         const span = document.createElement('span');
         span.className = 'mini-heart';
-        const glyphs = ['💗','💛','💕','🌹','🩷','💖'];
+        const glyphs = ['💗','💛','💕','🌹','🩷','💖','💓','🩵','💚','💙','💜','🧡','🌟','✨','💫','💞','♥️'];
         span.textContent = glyphs[Math.floor(Math.random()*glyphs.length)];
         const size = 12 + Math.random()*14;
         span.style.fontSize = size+'px';
