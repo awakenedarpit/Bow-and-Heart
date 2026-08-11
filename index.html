@@ -85,6 +85,22 @@
     text-align:center;
   }
 
+#scene-archery,
+#archery-svg {
+  touch-action: none !important;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+#archery-svg {
+  cursor: grab;
+}
+
+#archery-svg.dragging {
+  cursor: grabbing;
+}
+
   /* ==================== SCENE 1 — ARCHERY ==================== */
   #scene-archery{ background: radial-gradient(ellipse at 50% 34%, #ffd9c2 0%, var(--cream) 55%, var(--cream-2) 100%); }
 
@@ -376,7 +392,8 @@
   }
 
   /* =====================================================
-   SCENE 1 — ROBUST BOW + ARROW INTERACTION
+   SCENE 1 — BOW + ARROW
+   MOBILE-FIRST DRAG SYSTEM
    ===================================================== */
 
 const svg = document.getElementById('archery-svg');
@@ -389,217 +406,253 @@ const heartTarget = document.getElementById('heart-target');
 const burstLayer = document.getElementById('burst-layer');
 const pullHint = document.getElementById('pull-hint');
 
-/* -----------------------------------------------------
-   BOW POSITION + AIM
-   ----------------------------------------------------- */
 
-const bowAnchor = { x: 230, y: 1330 };
-const targetPoint = { x: 540, y: 420 };
+/* =====================================================
+   BOW + TARGET POSITIONS
+   ===================================================== */
+
+const bowAnchor = {
+  x: 230,
+  y: 1330
+};
+
+const targetPoint = {
+  x: 540,
+  y: 420
+};
+
+
+/* =====================================================
+   CALCULATE AIM DIRECTION
+   ===================================================== */
 
 const dx = targetPoint.x - bowAnchor.x;
 const dy = targetPoint.y - bowAnchor.y;
-const dist = Math.hypot(dx, dy);
+
+const distance = Math.hypot(dx, dy);
 
 const dir = {
-  x: dx / dist,
-  y: dy / dist
+  x: dx / distance,
+  y: dy / distance
 };
 
-const angleDeg = Math.atan2(dir.y, dir.x) * 180 / Math.PI;
+const angleDeg =
+  Math.atan2(dir.y, dir.x) * 180 / Math.PI;
+
+
+/* =====================================================
+   ROTATE BOW TOWARD HEART
+   ===================================================== */
 
 bowGroup.setAttribute(
   'transform',
   `translate(${bowAnchor.x},${bowAnchor.y}) rotate(${angleDeg})`
 );
 
-/* -----------------------------------------------------
-   BOW SETTINGS
-   ----------------------------------------------------- */
 
-const ARROW_LENGTH = 150;
-const MAX_PULL = 130;
+/* =====================================================
+   SETTINGS
+   ===================================================== */
+
+const MAX_PULL = 140;
 const FIRE_THRESHOLD = 35;
 
-let pulling = false;
+let isPulling = false;
 let pullAmount = 0;
-let activePointerId = null;
 
-/* -----------------------------------------------------
-   DRAW BOW
-   ----------------------------------------------------- */
+let startPointer = {
+  x: 0,
+  y: 0
+};
+
+
+/* =====================================================
+   DRAW ARROW
+   ===================================================== */
 
 function setArrow(pull) {
-
-  pull = Math.max(0, Math.min(MAX_PULL, pull));
-  pullAmount = pull;
-
-  /*
-     The arrow starts at the bow's center and moves backward
-     as the user pulls.
-  */
-
-  const nockX = -pull;
-
-  arrowGroup.setAttribute(
-    'transform',
-    `translate(${nockX},0)`
-  );
-
-  /*
-     Bowstring connects:
-       top limb
-          ↓
-       pulled nock
-          ↓
-       bottom limb
-  */
-
-  bowString.setAttribute(
-    'points',
-    `0,-140 ${nockX},0 0,140`
-  );
-
-  /*
-     Flex the limbs progressively.
-  */
-
-  const flex = 60 + pull * 0.45;
-
-  limbTop.setAttribute(
-    'd',
-    `M0,-140 Q${flex},-70 ${nockX},0`
-  );
-
-  limbBottom.setAttribute(
-    'd',
-    `M${nockX},0 Q${flex},70 0,140`
-  );
-}
-
-setArrow(0);
-
-/* -----------------------------------------------------
-   SVG COORDINATE CONVERSION
-   ----------------------------------------------------- */
-
-function toSvgPoint(evt) {
-
-  const point = svg.createSVGPoint();
-
-  point.x = evt.clientX;
-  point.y = evt.clientY;
-
-  const matrix = svg.getScreenCTM();
-
-  if (!matrix) return null;
-
-  return point.matrixTransform(matrix.inverse());
-}
-
-/* -----------------------------------------------------
-   POINTER DOWN
-   ----------------------------------------------------- */
-
-function startPull(evt) {
-
-  if (pulling) return;
-
-  const p = toSvgPoint(evt);
-
-  if (!p) return;
-
-  /*
-     Only begin pulling when the user starts reasonably
-     close to the bow / arrow area.
-
-     This makes the interaction much easier on mobile.
-  */
-
-  const distanceFromBow = Math.hypot(
-    p.x - bowAnchor.x,
-    p.y - bowAnchor.y
-  );
-
-  if (distanceFromBow > 260) return;
-
-  pulling = true;
-  activePointerId = evt.pointerId;
-
-  svg.setPointerCapture?.(evt.pointerId);
-
-  pullHint.style.opacity = '0';
-
-  evt.preventDefault();
-}
-
-/* -----------------------------------------------------
-   POINTER MOVE
-   ----------------------------------------------------- */
-
-function movePull(evt) {
-
-  if (!pulling) return;
-
-  if (
-    activePointerId !== null &&
-    evt.pointerId !== activePointerId
-  ) {
-    return;
-  }
-
-  const p = toSvgPoint(evt);
-
-  if (!p) return;
-
-  /*
-     Convert pointer position into bow-local coordinates.
-
-     We calculate how far behind the bow the pointer is
-     along the shooting direction.
-  */
-
-  const vx = p.x - bowAnchor.x;
-  const vy = p.y - bowAnchor.y;
-
-  const along = vx * dir.x + vy * dir.y;
-
-  /*
-     Negative 'along' = pulled backward.
-  */
-
-  let pull = -along;
 
   pull = Math.max(
     0,
     Math.min(MAX_PULL, pull)
   );
 
-  setArrow(pull);
+  pullAmount = pull;
 
-  evt.preventDefault();
+  /*
+     Arrow moves backwards when pulled.
+  */
+
+  arrowGroup.setAttribute(
+    'transform',
+    `translate(${-pull},0)`
+  );
+
+
+  /*
+     String follows the arrow nock.
+  */
+
+  bowString.setAttribute(
+    'points',
+    `0,-140 ${-pull},0 0,140`
+  );
+
+
+  /*
+     Bow bends as it is pulled.
+  */
+
+  const bend = 60 + pull * 0.45;
+
+  limbTop.setAttribute(
+    'd',
+    `M0,-140 Q${bend},-70 ${-pull},0`
+  );
+
+  limbBottom.setAttribute(
+    'd',
+    `M${-pull},0 Q${bend},70 0,140`
+  );
 }
 
-/* -----------------------------------------------------
-   POINTER UP
-   ----------------------------------------------------- */
 
-function endPull(evt) {
+/* Initial position */
 
-  if (!pulling) return;
+setArrow(0);
 
-  if (
-    activePointerId !== null &&
-    evt.pointerId !== activePointerId
-  ) {
-    return;
-  }
 
-  pulling = false;
-  activePointerId = null;
+/* =====================================================
+   CONVERT SCREEN POSITION → SVG POSITION
+   ===================================================== */
+
+function getSVGPoint(event) {
+
+  const point = svg.createSVGPoint();
+
+  point.x = event.clientX;
+  point.y = event.clientY;
+
+  const matrix = svg.getScreenCTM();
+
+  if (!matrix) return null;
+
+  return point.matrixTransform(
+    matrix.inverse()
+  );
+}
+
+
+/* =====================================================
+   START DRAG
+   ===================================================== */
+
+function startBowDrag(event) {
+
+  if (isPulling) return;
+
+  const point = getSVGPoint(event);
+
+  if (!point) return;
+
+  isPulling = true;
+
+  startPointer.x = point.x;
+  startPointer.y = point.y;
+
+  pullAmount = 0;
+
+  svg.classList.add('dragging');
+
+  pullHint.style.opacity = '0';
+
+  /*
+     IMPORTANT:
+     Capture the pointer so dragging continues even if
+     the finger leaves the SVG.
+  */
 
   try {
-    svg.releasePointerCapture?.(evt.pointerId);
-  } catch(e) {}
+    svg.setPointerCapture(event.pointerId);
+  } catch (e) {}
+
+  event.preventDefault();
+}
+
+
+/* =====================================================
+   DRAG
+   ===================================================== */
+
+function dragBow(event) {
+
+  if (!isPulling) return;
+
+  const point = getSVGPoint(event);
+
+  if (!point) return;
+
+
+  /*
+     How far has the finger moved from where it started?
+  */
+
+  const moveX =
+    point.x - startPointer.x;
+
+  const moveY =
+    point.y - startPointer.y;
+
+
+  /*
+     Project the movement onto the OPPOSITE direction
+     of the arrow.
+
+     This means:
+       drag toward bottom-left = pull
+  */
+
+  const pull =
+    -(moveX * dir.x + moveY * dir.y);
+
+
+  /*
+     Only allow pulling backward.
+  */
+
+  const actualPull =
+    Math.max(
+      0,
+      Math.min(MAX_PULL, pull)
+    );
+
+
+  setArrow(actualPull);
+
+  event.preventDefault();
+}
+
+
+/* =====================================================
+   RELEASE
+   ===================================================== */
+
+function releaseBow(event) {
+
+  if (!isPulling) return;
+
+  isPulling = false;
+
+  svg.classList.remove('dragging');
+
+  try {
+    svg.releasePointerCapture(event.pointerId);
+  } catch (e) {}
+
+
+  /*
+     Enough pull = FIRE
+  */
 
   if (pullAmount >= FIRE_THRESHOLD) {
 
@@ -607,102 +660,122 @@ function endPull(evt) {
 
   } else {
 
-    springBack();
+    springBowBack();
   }
 }
 
-/* -----------------------------------------------------
-   SPRING BACK
-   ----------------------------------------------------- */
 
-function springBack() {
+/* =====================================================
+   SPRING BOW BACK
+   ===================================================== */
+
+function springBowBack() {
 
   const start = pullAmount;
-  const startTime = performance.now();
-  const duration = 260;
+
+  const startTime =
+    performance.now();
+
+  const duration = 250;
+
 
   function animateBack(now) {
 
-    const progress = Math.min(
-      1,
-      (now - startTime) / duration
-    );
+    const progress =
+      Math.min(
+        1,
+        (now - startTime) / duration
+      );
 
-    const eased = 1 - Math.pow(1 - progress, 3);
+    const eased =
+      1 - Math.pow(1 - progress, 3);
 
-    const value = start * (1 - eased);
+    const value =
+      start * (1 - eased);
 
     setArrow(value);
 
+
     if (progress < 1) {
 
-      requestAnimationFrame(animateBack);
+      requestAnimationFrame(
+        animateBack
+      );
 
     } else {
 
       setArrow(0);
+
       pullHint.style.opacity = '.4';
     }
   }
 
-  requestAnimationFrame(animateBack);
+  requestAnimationFrame(
+    animateBack
+  );
 }
 
-/* -----------------------------------------------------
-   EVENT LISTENERS
-   ----------------------------------------------------- */
+
+/* =====================================================
+   POINTER EVENTS
+   ===================================================== */
 
 svg.addEventListener(
   'pointerdown',
-  startPull,
+  startBowDrag,
   { passive: false }
 );
 
 svg.addEventListener(
   'pointermove',
-  movePull,
+  dragBow,
   { passive: false }
 );
 
 svg.addEventListener(
   'pointerup',
-  endPull
+  releaseBow
 );
 
 svg.addEventListener(
   'pointercancel',
-  endPull
+  releaseBow
 );
 
-/* -----------------------------------------------------
+
+/* =====================================================
    FIRE ARROW
-   ----------------------------------------------------- */
+   ===================================================== */
 
 function fireArrow(power) {
 
   /*
-     Arrow begins at the pulled nock position.
+     Starting position of the pulled arrow.
   */
 
-  const startLocal = {
-    x: -power,
-    y: 0
-  };
+  const startLocalX =
+    -power;
 
-  const rad = angleDeg * Math.PI / 180;
+
+  const rad =
+    angleDeg * Math.PI / 180;
+
 
   const startWorld = {
 
     x:
       bowAnchor.x +
-      startLocal.x * Math.cos(rad),
+      startLocalX * Math.cos(rad),
 
     y:
       bowAnchor.y +
-      startLocal.x * Math.sin(rad)
+      startLocalX * Math.sin(rad)
   };
 
-  /* Create flying arrow */
+
+  /*
+     Create flying arrow.
+  */
 
   const flying =
     document.createElementNS(
@@ -710,17 +783,19 @@ function fireArrow(power) {
       'g'
     );
 
+
   flying.setAttribute(
     'transform',
     `translate(${startWorld.x},${startWorld.y})
      rotate(${angleDeg})`
   );
 
+
   flying.innerHTML = `
     <line
       x1="0"
       y1="0"
-      x2="${ARROW_LENGTH}"
+      x2="150"
       y2="0"
       stroke="#5b3a2c"
       stroke-width="6"
@@ -728,7 +803,7 @@ function fireArrow(power) {
     />
 
     <polygon
-      points="${ARROW_LENGTH},0 ${ARROW_LENGTH-20},-9 ${ARROW_LENGTH-20},9"
+      points="150,0 130,-9 130,9"
       fill="#eab35e"
     />
 
@@ -738,37 +813,55 @@ function fireArrow(power) {
     />
   `;
 
+
   svg.appendChild(flying);
 
-  /* Reset bow immediately */
+
+  /*
+     Reset bow.
+  */
 
   setArrow(0);
+
   pullAmount = 0;
 
-  /* ---------------------------------------------------
-     ARROW FLIGHT
-     --------------------------------------------------- */
 
-  const startTime = performance.now();
+  /* =================================================
+     ARROW FLIGHT
+     ================================================= */
+
+  const startTime =
+    performance.now();
+
   const duration = 420;
 
-  const distance =
+
+  const flightDistance =
     Math.hypot(
       targetPoint.x - startWorld.x,
       targetPoint.y - startWorld.y
     ) - 45;
 
+
   function animateArrow(now) {
 
-    const progress = Math.min(
-      1,
-      (now - startTime) / duration
-    );
+    const progress =
+      Math.min(
+        1,
+        (now - startTime) / duration
+      );
+
 
     const eased =
-      1 - Math.pow(1 - progress, 3);
+      1 - Math.pow(
+        1 - progress,
+        3
+      );
 
-    const travel = distance * eased;
+
+    const travel =
+      flightDistance * eased;
+
 
     const x =
       startWorld.x +
@@ -778,14 +871,19 @@ function fireArrow(power) {
       startWorld.y +
       dir.y * travel;
 
+
     flying.setAttribute(
       'transform',
-      `translate(${x},${y}) rotate(${angleDeg})`
+      `translate(${x},${y})
+       rotate(${angleDeg})`
     );
+
 
     if (progress < 1) {
 
-      requestAnimationFrame(animateArrow);
+      requestAnimationFrame(
+        animateArrow
+      );
 
     } else {
 
@@ -795,29 +893,39 @@ function fireArrow(power) {
     }
   }
 
-  requestAnimationFrame(animateArrow);
+
+  requestAnimationFrame(
+    animateArrow
+  );
 }
 
-/* -----------------------------------------------------
+
+/* =====================================================
    HEART HIT
-   ----------------------------------------------------- */
+   ===================================================== */
 
 function hitHeart() {
 
-  /* Heart impact */
+  /*
+     IMPACT
+  */
 
   heartTarget.animate(
+
     [
       {
         transform: 'scale(1)'
       },
+
       {
         transform: 'scale(1.4)'
       },
+
       {
         transform: 'scale(1.05)'
       }
     ],
+
     {
       duration: 260,
       easing: 'ease-out',
@@ -825,41 +933,179 @@ function hitHeart() {
     }
   );
 
-  /* Heart drops */
+
+  /*
+     HEART DROP
+  */
 
   setTimeout(() => {
 
     heartTarget.animate(
+
       [
+
         {
           transform:
-            'translate(0px,0px) rotate(0deg) scale(1.05)',
-          opacity: 1,
-          offset: 0
+            'translate(0,0) rotate(0deg) scale(1.05)',
+          opacity: 1
         },
+
         {
           transform:
             'translate(-30px,120px) rotate(-25deg) scale(1)',
-          opacity: 1,
-          offset: .4
+          opacity: 1
         },
+
         {
           transform:
             'translate(-60px,520px) rotate(-70deg) scale(.85)',
-          opacity: 0,
-          offset: 1
+          opacity: 0
         }
+
       ],
+
       {
         duration: 700,
-        easing: 'cubic-bezier(.55,0,.85,.4)',
+        easing:
+          'cubic-bezier(.55,0,.85,.4)',
         fill: 'forwards'
       }
     );
 
   }, 260);
 
-  /* ---------------------------------------------------
+
+  /*
+     HEART BURST
+  */
+
+  const glyphs = [
+    '💗',
+    '💛',
+    '💕',
+    '🩷'
+  ];
+
+
+  for (let i = 0; i < 16; i++) {
+
+    const heart =
+      document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'text'
+      );
+
+
+    const angle =
+      Math.random() * Math.PI * 2;
+
+
+    const radius = 10;
+
+
+    heart.setAttribute(
+      'x',
+      targetPoint.x +
+      Math.cos(angle) * radius
+    );
+
+    heart.setAttribute(
+      'y',
+      targetPoint.y +
+      Math.sin(angle) * radius
+    );
+
+
+    heart.setAttribute(
+      'font-size',
+      20 + Math.random() * 22
+    );
+
+
+    heart.setAttribute(
+      'text-anchor',
+      'middle'
+    );
+
+
+    heart.setAttribute(
+      'opacity',
+      '0'
+    );
+
+
+    heart.textContent =
+      glyphs[i % glyphs.length];
+
+
+    burstLayer.appendChild(heart);
+
+
+    const driftX =
+      (Math.random() - .5) * 260;
+
+    const driftY =
+      -(120 + Math.random() * 260);
+
+
+    heart.animate(
+
+      [
+
+        {
+          transform:
+            'translate(0,0)',
+          opacity: 0
+        },
+
+        {
+          transform:
+            'translate(0,0)',
+          opacity: 1
+        },
+
+        {
+          transform:
+            `translate(${driftX}px,${driftY}px)`,
+          opacity: 0
+        }
+
+      ],
+
+      {
+        duration:
+          1100 + Math.random() * 700,
+
+        delay:
+          Math.random() * 150,
+
+        easing:
+          'cubic-bezier(.2,.6,.3,1)',
+
+        fill: 'forwards'
+      }
+    );
+  }
+
+
+  /* =================================================
+     NEXT SCENES
+     ================================================= */
+
+  setTimeout(() => {
+
+    showScene('title');
+
+    setTimeout(() => {
+
+      showScene('tree');
+
+      growTree();
+
+    }, CONFIG.autoAdvanceTitleMs);
+
+  }, 1080);
+} ---------------------------------------------------
      HEART BURST
      --------------------------------------------------- */
 
