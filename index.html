@@ -354,14 +354,16 @@
   document.getElementById('tree-sub').textContent = CONFIG.treeSub;
 
   /* =====================================================
-     Background music — starts on the first tap (mobile autoplay
-     rules require a user gesture), muted state is remembered
-     while the page stays open.
+     Background music — starts on the first tap (mobile/desktop
+     autoplay rules require a user gesture). If that first attempt
+     gets blocked, it keeps retrying on every subsequent tap
+     instead of giving up — Chrome/Firefox/Edge are stricter about
+     this than some browsers, so a single try isn't reliable.
      ===================================================== */
   const bgm = document.getElementById('bgm');
   const musicBtn = document.getElementById('music-btn');
-  let musicStarted = false;
-  let musicMuted = false;
+  const stageEl = document.getElementById('stage');
+  let musicPlaying = false;
 
   if (CONFIG.musicSrc){
     bgm.src = CONFIG.musicSrc;
@@ -370,18 +372,24 @@
     musicBtn.style.display = 'none';
   }
 
-  function startMusicOnce(){
-    if (musicStarted || !CONFIG.musicSrc) return;
-    musicStarted = true;
-    bgm.play().catch(() => { /* still blocked — the mute button lets them retry manually */ });
+  function tryPlayMusic(){
+    if (!CONFIG.musicSrc || musicPlaying) return;
+    bgm.play().then(() => {
+      musicPlaying = true;
+      musicBtn.textContent = bgm.muted ? '🔇' : '🔈';
+      stageEl.removeEventListener('pointerdown', tryPlayMusic);
+    }).catch(() => {
+      // still blocked by this browser's autoplay policy — leave musicPlaying
+      // false so the very next tap (anywhere, or the music button) tries again
+    });
   }
-  document.getElementById('stage').addEventListener('pointerdown', startMusicOnce, {once:true});
+  stageEl.addEventListener('pointerdown', tryPlayMusic);
 
-  musicBtn.addEventListener('click', () => {
-    if (!musicStarted){ startMusicOnce(); musicMuted = false; }
-    else { musicMuted = !musicMuted; }
-    bgm.muted = musicMuted;
-    musicBtn.textContent = musicMuted ? '🔇' : '🔈';
+  musicBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!musicPlaying){ tryPlayMusic(); return; }
+    bgm.muted = !bgm.muted;
+    musicBtn.textContent = bgm.muted ? '🔇' : '🔈';
   });
 
   /* =====================================================
