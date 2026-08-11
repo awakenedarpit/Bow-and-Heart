@@ -231,6 +231,15 @@
     opacity:.55; cursor:pointer;
   }
 
+  /* music toggle */
+  #music-btn{
+    position:absolute; top:14px; left:14px; z-index:10;
+    background:rgba(0,0,0,.18); color:#fff; border:none; border-radius:50%;
+    width:34px; height:34px; font-size:15px; line-height:1;
+    opacity:.6; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+
   @media (prefers-reduced-motion: reduce){
     .mini-heart.bloomed{ animation:none; }
     .scene{ transition:opacity .3s linear; }
@@ -244,6 +253,15 @@
   <div id="stage">
 
     <button id="skip-btn" title="restart">restart</button>
+    <button id="music-btn" title="toggle music">🔈</button>
+
+    <!-- ================= BACKGROUND MUSIC =================
+         Drop your own audio file next to this HTML file and point
+         MUSIC_SRC (in the config below) at its filename — e.g.
+         "music.mp3". Mobile browsers block autoplay until the
+         person interacts, so playback starts on their first tap
+         (pulling the bow) and can be muted with the speaker icon. -->
+    <audio id="bgm" loop preload="auto"></audio>
 
     <!-- ================= SCENE 1: ARCHERY ================= -->
     <section id="scene-archery" class="scene active">
@@ -322,6 +340,8 @@
     autoAdvanceTitleMs: 2600,      // how long the title scene holds before the tree
     floatingEmojis: ["🎈","✨","💛","🌸","💗","🌟"],  // ambient background drift
     floatingCount: 12,             // how many per scene
+    musicSrc: "music.mp3",         // put your audio file next to this HTML and name it here (mp3/ogg/m4a all fine)
+    musicVolume: 0.55,
   };
 
   if (CONFIG.recipientName){
@@ -332,6 +352,37 @@
   document.getElementById('title-sub').textContent = CONFIG.titleSub;
   document.getElementById('tree-eyebrow').textContent = CONFIG.treeEyebrow;
   document.getElementById('tree-sub').textContent = CONFIG.treeSub;
+
+  /* =====================================================
+     Background music — starts on the first tap (mobile autoplay
+     rules require a user gesture), muted state is remembered
+     while the page stays open.
+     ===================================================== */
+  const bgm = document.getElementById('bgm');
+  const musicBtn = document.getElementById('music-btn');
+  let musicStarted = false;
+  let musicMuted = false;
+
+  if (CONFIG.musicSrc){
+    bgm.src = CONFIG.musicSrc;
+    bgm.volume = CONFIG.musicVolume;
+  } else {
+    musicBtn.style.display = 'none';
+  }
+
+  function startMusicOnce(){
+    if (musicStarted || !CONFIG.musicSrc) return;
+    musicStarted = true;
+    bgm.play().catch(() => { /* still blocked — the mute button lets them retry manually */ });
+  }
+  document.getElementById('stage').addEventListener('pointerdown', startMusicOnce, {once:true});
+
+  musicBtn.addEventListener('click', () => {
+    if (!musicStarted){ startMusicOnce(); musicMuted = false; }
+    else { musicMuted = !musicMuted; }
+    bgm.muted = musicMuted;
+    musicBtn.textContent = musicMuted ? '🔇' : '🔈';
+  });
 
   /* =====================================================
      Scene switching
