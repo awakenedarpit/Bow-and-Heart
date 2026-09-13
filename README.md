@@ -59,3 +59,6 @@ No license has been selected yet. Unless a license is added, the source should b
 - Instagram: [@awakenedarpit](https://www.instagram.com/awakenedarpit/)
 - LinkedIn: [Arpit Raj](https://www.linkedin.com/in/awakenedarpit/)
 - Email: [awakenedarpit@gmail.com](mailto:awakenedarpit@gmail.com)
+
+<!-- awakenedarpit-twitter-contact -->
+- Twitter/X: [@awakenedarpit](https://x.com/awakenedarpit)
