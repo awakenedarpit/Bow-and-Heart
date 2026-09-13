@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Happy Birthday · draw the bow, hit the heart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Quicksand:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Yellowtail&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
   *{ box-sizing: border-box; }
 
   html,body{
-    margin:0; padding:0; height:100%;
+    margin:0; padding:0; min-height:100%;
     background:#1b0e14;
     font-family:'Quicksand', sans-serif;
     overflow:hidden;
@@ -36,15 +36,19 @@
   #stage-frame{
     position:fixed; inset:0;
     display:flex; align-items:center; justify-content:center;
+    padding:clamp(0px, 2vw, 24px);
   }
 
   #stage{
     position:relative;
-    width:min(100vw, 56.25vh);
-    height:min(177.78vw, 100vh);
+    width:min(100vw, 56.25dvh);
+    height:min(177.78vw, 100dvh);
+    max-width:100%;
+    max-height:100%;
     background: linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
     overflow:hidden;
     box-shadow:0 0 60px rgba(0,0,0,.5);
+    border-radius:clamp(0px, 1.2vw, 16px);
   }
 
   .scene{
@@ -190,6 +194,36 @@
     opacity:.55; cursor:pointer;
   }
 
+  /* Phone layout remains portrait; wider screens get a comfortable landscape canvas. */
+  @media (min-width: 700px) and (min-height: 420px){
+    #stage{
+      width:min(1120px, 100vw);
+      height:min(720px, 100dvh);
+      border-radius:16px;
+    }
+
+    #scene-archery{
+      background:
+        radial-gradient(ellipse at 50% 35%, #ffd9c2 0%, var(--cream) 55%, var(--cream-2) 100%);
+    }
+
+    #archery-svg{
+      width:100%;
+      height:100%;
+      /* Keep the original portrait artwork intact and fully visible on desktop. */
+    }
+
+    .title{ font-size:clamp(58px, 7vw, 96px); }
+    .script-title{ font-size:clamp(52px, 6vw, 78px); }
+    .tree-text{ padding:0 8% 6%; }
+    #canopy{ width:min(42%, 380px); }
+  }
+
+  @media (max-width: 699px), (max-height: 419px){
+    #stage-frame{ padding:0; }
+    #stage{ border-radius:0; }
+  }
+
   @media (prefers-reduced-motion: reduce){
     .mini-heart.bloomed{ animation:none; }
     .scene{ transition:opacity .3s linear; }
@@ -205,7 +239,7 @@
 
     <!-- ================= SCENE 1: ARCHERY ================= -->
     <section id="scene-archery" class="scene active">
-      <svg id="archery-svg" viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid slice">
+      <svg id="archery-svg" viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid meet">
 
         <text x="540" y="230" text-anchor="middle" font-family="Fredoka" font-style="italic"
               font-size="34" fill="#4a2e2e" opacity=".55" id="archer-caption">a little something, for you</text>
