@@ -52,3 +52,10 @@ For questions, suggestions, or collaboration, contact Arpit through GitHub:
 ## License
 
 No license has been selected yet. Unless a license is added, the source should be treated as **all rights reserved**.
+
+<!-- awakenedarpit-social-contact -->
+### Connect with Arpit
+
+- Instagram: [@awakenedarpit](https://www.instagram.com/awakenedarpit/)
+- LinkedIn: [Arpit Raj](https://www.linkedin.com/in/awakenedarpit/)
+- Email: [awakenedarpit@gmail.com](mailto:awakenedarpit@gmail.com)
